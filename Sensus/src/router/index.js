@@ -1,23 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import Start from '../views/StartView.vue'
-import AgeGender from '../views/AgeGenderView.vue'
-import Warning from '../views/WarningView.vue'
-import Home from '../views/HomeView.vue'
-import Scenario from '../views/ScenarioView.vue'
+import Start from '../views/Start.vue'
+import Home from '../views/Home.vue'
+import Join from '../views/Join.vue'
+import Scenario from '../views/Scenario.vue'
+import End from '../views/EndView.vue'
 
 const routes = [
-
   { path: '/', component: Start },
-
-  { path: '/onboarding', component: AgeGender },
-
-  { path: '/warning', component: Warning },
-
+  { path: '/join', component: Join },
   { path: '/home', component: Home },
-
-  { path: '/scenario/:id', component: Scenario }
-
+  { path: '/scenario/:id', component: Scenario },
+  { path: '/end', component: End }
 ]
 
 export default createRouter({

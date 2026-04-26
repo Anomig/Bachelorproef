@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "scenarios",
+  "info": {
+    "singularName": "scenario",
+    "pluralName": "scenarios",
+    "displayName": "Scenario"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "theme": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "age_min": {
+      "type": "integer"
+    },
+    "age_max": {
+      "type": "integer"
+    },
+    "is_active": {
+      "type": "boolean"
+    },
+    "engine_json": {
+      "type": "json"
+    }
+  }
+}
