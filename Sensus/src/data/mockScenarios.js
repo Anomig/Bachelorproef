@@ -1,0 +1,53 @@
+import { mockScenario } from './mockScenario'
+
+const mockScenarioTwo = {
+  start: 'intro',
+  steps: {
+    intro: {
+      type: 'text',
+      text: 'Je zit in een groepschat en iemand wordt uitgelachen.',
+      next: 'choice_1'
+    },
+    choice_1: {
+      type: 'choice',
+      text: 'Wat doe je?',
+      options: [
+        {
+          key: 'a',
+          label: 'Je lacht mee om erbij te horen',
+          next: 'end_bad'
+        },
+        {
+          key: 'b',
+          label: 'Je reageert respectvol en stopt het gesprek',
+          next: 'end_good'
+        }
+      ]
+    },
+    end_bad: {
+      type: 'end',
+      text: 'Meelachen kan kwetsend zijn en de situatie erger maken.'
+    },
+    end_good: {
+      type: 'end',
+      text: 'Je kiest voor respect en helpt de groepssfeer.'
+    }
+  }
+}
+
+export const mockScenarios = [
+  {
+    id: 'feestje',
+    title: 'Feestje en grenzen',
+    shortDescription: 'Je reageert op een situatie op een feestje.',
+    estimatedMinutes: 3,
+    scenario: mockScenario
+  },
+  {
+    id: 'groepschat',
+    title: 'Groepschat en respect',
+    shortDescription: 'Je beslist hoe je omgaat met groepsdruk online.',
+    estimatedMinutes: 3,
+    scenario: mockScenarioTwo
+  }
+]

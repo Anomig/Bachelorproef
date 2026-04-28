@@ -1,16 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import Start from '../views/Start.vue'
-import Home from '../views/Home.vue'
 import Join from '../views/Join.vue'
+import Overview from '../views/Overview.vue'
 import Scenario from '../views/Scenario.vue'
+import Reflection from '../views/Reflection.vue'
 import End from '../views/EndView.vue'
 
 const routes = [
-  { path: '/', component: Start },
+  { path: '/', redirect: '/join' },
   { path: '/join', component: Join },
-  { path: '/home', component: Home },
-  { path: '/scenario/:id', component: Scenario },
+  { path: '/overview', component: Overview },
+  { path: '/scenario', component: Scenario },
+  { path: '/reflection', component: Reflection },
   { path: '/end', component: End }
 ]
 

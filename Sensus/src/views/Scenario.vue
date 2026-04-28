@@ -1,38 +1,81 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { supabase } from '../lib/supabase'
+import { computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useSessionStore } from '../stores/sessionStore'
+import AppButton from '../components/AppButton.vue'
+import ChoiceButton from '../components/ChoiceButton.vue'
 
-const sessionId = ref(null)
+const router = useRouter()
+const store = useSessionStore()
 
-const scenario = ref({
-  title: 'Test scenario',
-  text: 'Je bent op een feestje...'
-})
-
-const choices = ref([
-  { id: 'a', text: 'Je gaat mee in het gesprek' },
-  { id: 'b', text: 'Je zegt dat je je ongemakkelijk voelt' }
-])
+const step = computed(() => store.currentStep)
+const scenarioTitle = computed(() => store.selectedScenario?.title || 'Scenario')
 
 onMounted(() => {
-  const urlParams = new URLSearchParams(window.location.search)
-  sessionId.value = urlParams.get('session')
+  if (!store.joined) {
+    router.replace('/join')
+    return
+  }
+
+  if (!store.selectedScenarioId) {
+    router.replace('/overview')
+    return
+  }
+
+  if (!store.currentStep) {
+    const ok = store.startSelectedScenario()
+    if (!ok) {
+      router.replace('/overview')
+    }
+  }
 })
 
-async function selectChoice(choice) {
-  const { error } = await supabase.from('events').insert([
-    {
-      session_id: sessionId.value,
-      step_id: 'scenario_1',
-      type: 'choice',
-      value: choice.id
-    }
-  ])
-
-  if (error) {
-    console.error(error)
-  } else {
-    console.log('Choice opgeslagen ✔')
+function goToReflectionIfNeeded(nextStep) {
+  if (nextStep?.type === 'end') {
+    router.push('/reflection')
   }
 }
+
+function continueFlow() {
+  const nextStep = store.goNext()
+  goToReflectionIfNeeded(nextStep)
+}
+
+function choose(option) {
+  const nextStep = store.next(option.key)
+  goToReflectionIfNeeded(nextStep)
+}
 </script>
+
+<template>
+  <main class="page-shell page-shell--scenario">
+    <section v-if="step" class="page-card">
+      <p class="page-kicker">{{ scenarioTitle }}</p>
+      <p class="page-intro">
+        {{ step.text }}
+      </p>
+
+      <div v-if="step.type === 'text'">
+        <AppButton @click="continueFlow">
+          Verder
+        </AppButton>
+      </div>
+
+      <div v-else-if="step.type === 'choice'" class="scenario-choices">
+        <ChoiceButton
+          v-for="opt in step.options"
+          :key="opt.key"
+          :label="opt.label"
+          @click="choose(opt)"
+        />
+      </div>
+    </section>
+
+    <section v-else class="page-card">
+      <p>Geen actieve stap gevonden.</p>
+      <AppButton @click="router.push('/overview')">
+        Terug naar overzicht
+      </AppButton>
+    </section>
+  </main>
+</template>

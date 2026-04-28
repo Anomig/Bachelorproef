@@ -1,32 +1,46 @@
-export function createScenarioEngine(nodes){
+export function createScenarioEngine(scenario) {
 
-  let currentNode = nodes[0]
+  let currentStepId = scenario.start
 
-  function getNode(){
-
-    return currentNode
-
+  function getStep() {
+    return scenario.steps[currentStepId]
   }
 
-  function choose(choiceId){
+  function next(choiceKey) {
+    const step = getStep()
 
-    const next = currentNode.choices.find(
-      c => c.id === choiceId
-    )
+    const selected = step.options.find(o => o.key === choiceKey)
 
-    currentNode = nodes.find(
-      n => n.id === next.nextNode
-    )
+    if (!selected) {
+      console.error('Invalid choice')
+      return
+    }
 
-    return currentNode
+    currentStepId = selected.next
+    return getStep()
+  }
 
+  function goNext() {
+    const step = getStep()
+
+    if (!step) {
+      console.error('Step is undefined')
+      return null
+    }
+
+    if (!step.next) {
+      console.error('No next step for:', step)
+      return null
+    }
+
+    currentStepId = step.next
+
+    return getStep()
   }
 
   return {
-
-    getNode,
-    choose
-
+    getStep,
+    next,
+    goNext
   }
-
 }
