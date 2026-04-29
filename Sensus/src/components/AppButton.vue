@@ -1,4 +1,5 @@
 <script setup>
+// Herbruikbare knopcomponent met `primary`/`secondary` varianten.
 import { computed } from 'vue'
 
 const props = defineProps({

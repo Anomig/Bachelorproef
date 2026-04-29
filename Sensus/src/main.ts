@@ -1,3 +1,4 @@
+// Entry point van de Vue app: laadt globale styles, registreert Pinia + router en mount op #app.
 import './assets/styles/tokens.css'
 import './assets/styles/typography.css'
 import './assets/styles/global.css'

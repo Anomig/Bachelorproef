@@ -1,4 +1,5 @@
 <script setup>
+// Scenario-scherm: toont de huidige stap en verwerkt keuzes binnen de scenario-engine.
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSessionStore } from '../stores/sessionStore'

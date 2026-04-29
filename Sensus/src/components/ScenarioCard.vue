@@ -1,4 +1,5 @@
 <script setup>
+// Presentatiekaart voor 1 scenario in de overview-grid.
 import AppButton from './AppButton.vue'
 
 defineProps({

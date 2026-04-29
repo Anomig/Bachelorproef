@@ -1,4 +1,5 @@
 <script setup>
+// Join-scherm: valideert de sessiecode en start daarna de sessieflow.
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSessionStore } from '../stores/sessionStore'

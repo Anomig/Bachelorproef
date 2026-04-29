@@ -1,4 +1,5 @@
 <script setup>
+// 4-vaks code-input met numerieke validatie, auto-focus en paste-ondersteuning.
 import { ref, watch } from 'vue'
 
 const props = defineProps({

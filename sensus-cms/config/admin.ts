@@ -1,3 +1,4 @@
+// Admin-configuratie: secrets voor admin-auth, API tokens en transfer/encryptie.
 import type { Core } from '@strapi/strapi';
 
 const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Admin => ({

@@ -1,3 +1,4 @@
+// Bundelt de twee demo-scenario's in de lijststructuur die de overview verwacht.
 import { mockScenario } from './mockScenario'
 
 const mockScenarioTwo = {

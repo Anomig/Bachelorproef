@@ -1,3 +1,4 @@
+// Supabase service-laag: schrijft en leest reflecties in de tabel `reflections`.
 import { supabase } from '../lib/supabase'
 
 // Save a reflection tied to a scenario and session

@@ -1,4 +1,5 @@
 <script setup>
+// Overzichtsscherm: laadt beschikbare scenario's en laat de gebruiker er eentje starten.
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSessionStore } from '../stores/sessionStore'

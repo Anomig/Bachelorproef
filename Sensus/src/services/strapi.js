@@ -1,3 +1,4 @@
+// Strapi service-laag: haalt scenario's op via REST en mapt responses naar frontend-vorm.
 const RAW_BASE = import.meta?.env?.VITE_STRAPI_URL || ''
 const BASE = RAW_BASE.replace(/\/$/, '')
 const HAS_STRAPI = Boolean(BASE)

@@ -1,3 +1,4 @@
+// Kleine state-machine: navigeert door scenario-stappen op basis van keuzes of `next`.
 export function createScenarioEngine(scenario) {
 
   let currentStepId = scenario.start

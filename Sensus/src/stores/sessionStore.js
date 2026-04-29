@@ -1,3 +1,4 @@
+// Hoofdstore van de app: bewaart sessie, scenario-flow state en reflectiegegevens.
 import { defineStore } from 'pinia'
 import { createScenarioEngine } from '../engine/scenarioEngine'
 import { mockScenarios } from '../data/mockScenarios'
@@ -7,6 +8,11 @@ const REFLECTION_DEFAULTS = {
   impact: '',
   lesson: '',
   nextTime: ''
+}
+
+function createSessionId() {
+  const id = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`
+  return `session-${id}`
 }
 
 export const useSessionStore = defineStore('session', {
@@ -53,7 +59,7 @@ export const useSessionStore = defineStore('session', {
         return false
       }
 
-      this.sessionId = `session-${Date.now()}`
+      this.sessionId = createSessionId()
       this.enteredCode = normalized
       this.joined = true
       this.joinError = ''

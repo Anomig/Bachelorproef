@@ -1,3 +1,4 @@
+// Tijdelijke analytics helper: logt keuze-events lokaal (kan later naar echte tracking).
 export function trackChoice({
 
   scenarioId,

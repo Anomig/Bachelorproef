@@ -1,3 +1,4 @@
+// JS-variant van de router; functioneel gelijk aan `router/index.ts`.
 import { createRouter, createWebHistory } from 'vue-router'
 
 import Join from '../views/Join.vue'

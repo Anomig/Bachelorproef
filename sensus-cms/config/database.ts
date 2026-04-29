@@ -1,3 +1,4 @@
+// Database-config: kiest client via env (sqlite/postgres/mysql) en bouwt connectie-opties.
 import path from 'path';
 import type { Core } from '@strapi/strapi';
 

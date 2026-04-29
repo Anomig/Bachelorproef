@@ -1,3 +1,4 @@
+// Voorbeeldscenario 1: lokaal gebruikt als fallback wanneer CMS-data ontbreekt.
 export const mockScenario = {
   start: "intro",
   steps: {

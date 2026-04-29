@@ -1,3 +1,4 @@
+// Initialisatie van de gedeelde Supabase client met publieke frontend env-variabelen.
 import { createClient } from '@supabase/supabase-js'
 
 export const supabase = createClient(

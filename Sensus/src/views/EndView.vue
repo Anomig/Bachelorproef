@@ -1,4 +1,5 @@
 <script setup>
+// Eindscherm: toont samenvatting van reflectie en biedt navigatie terug naar overzicht/join.
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSessionStore } from '../stores/sessionStore'

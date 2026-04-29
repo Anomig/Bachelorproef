@@ -1,4 +1,5 @@
 <script setup>
+// Keuze-knop voor scenario-opties; emit enkel een click-event naar de parent.
 defineProps({
   label: {
     type: String,

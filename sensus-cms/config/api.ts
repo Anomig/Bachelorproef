@@ -1,3 +1,4 @@
+// REST API limieten: bepaalt default/max paginatie voor content endpoints.
 import type { Core } from '@strapi/strapi';
 
 const config: Core.Config.Api = {

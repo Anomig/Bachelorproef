@@ -1,3 +1,4 @@
+// Centrale route-definitie: koppelt URL-paden aan views en gebruikt HTML5 history mode.
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 
 import Join from '../views/Join.vue'

@@ -1,4 +1,5 @@
 <script setup>
+// Reflectiescherm: verzamelt tekstvelden na afloop en bewaart ze via de store/service.
 import { reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSessionStore } from '../stores/sessionStore'
