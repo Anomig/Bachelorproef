@@ -10,6 +10,18 @@ async function safeJson(res) {
   }
 }
 
+function mapScenarioItem(item) {
+  const fields = item?.attributes || item || {}
+
+  return {
+    id: String(item?.id ?? item?.documentId ?? ''),
+    title: fields.title || '',
+    shortDescription: fields.description || '',
+    theme: fields.theme || '',
+    scenario: fields.engine_json || null
+  }
+}
+
 export async function fetchScenarios() {
   if (!HAS_STRAPI) {
     return []
@@ -21,13 +33,7 @@ export async function fetchScenarios() {
     const data = await safeJson(res)
     if (!data || !data.data) return []
 
-    return data.data.map(item => ({
-      id: String(item.id),
-      title: item.attributes.title,
-      shortDescription: item.attributes.description || '',
-      theme: item.attributes.theme || '',
-      scenario: item.attributes.engine_json || null
-    }))
+    return data.data.map(mapScenarioItem)
   } catch (err) {
     console.error('fetchScenarios error', err)
     return []
@@ -44,14 +50,7 @@ export async function fetchScenario(id) {
     const res = await fetch(`${API}/scenarios/${id}?populate=deep`)
     const data = await safeJson(res)
     if (!data || !data.data) return null
-    const item = data.data
-    return {
-      id: String(item.id),
-      title: item.attributes.title,
-      shortDescription: item.attributes.description || '',
-      theme: item.attributes.theme || '',
-      scenario: item.attributes.engine_json || null
-    }
+    return mapScenarioItem(data.data)
   } catch (err) {
     console.error('fetchScenario error', err)
     return null
