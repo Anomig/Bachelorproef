@@ -11,6 +11,24 @@ async function safeJson(res) {
   }
 }
 
+function normalizeEngineJson(value) {
+  if (!value) return null
+
+  if (typeof value === 'string') {
+    try {
+      return JSON.parse(value)
+    } catch (e) {
+      return null
+    }
+  }
+
+  if (typeof value === 'object') {
+    return value
+  }
+
+  return null
+}
+
 function mapScenarioItem(item) {
   const fields = item?.attributes || item || {}
 
@@ -19,7 +37,7 @@ function mapScenarioItem(item) {
     title: fields.title || '',
     shortDescription: fields.description || '',
     theme: fields.theme || '',
-    scenario: fields.engine_json || null
+    scenario: normalizeEngineJson(fields.engine_json)
   }
 }
 

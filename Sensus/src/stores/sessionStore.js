@@ -10,6 +10,13 @@ const REFLECTION_DEFAULTS = {
   nextTime: ''
 }
 
+function isValidScenarioDefinition(value) {
+  if (!value || typeof value !== 'object') return false
+  if (typeof value.start !== 'string' || !value.start) return false
+  if (!value.steps || typeof value.steps !== 'object') return false
+  return Boolean(value.steps[value.start])
+}
+
 function createSessionId() {
   const id = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`
   return `session-${id}`
@@ -72,13 +79,20 @@ export const useSessionStore = defineStore('session', {
       try {
         const items = await fetchScenarios()
         if (items && items.length) {
-          // ensure each scenario has the expected `scenario` object
-          this.availableScenarios = items.map(it => ({
+          const validItems = items.filter(it => isValidScenarioDefinition(it?.scenario))
+
+          if (!validItems.length) {
+            console.warn('No valid scenario engine_json found in Strapi, fallback to mocks')
+            this.availableScenarios = mockScenarios
+            return
+          }
+
+          this.availableScenarios = validItems.map(it => ({
             id: it.id,
             title: it.title,
             shortDescription: it.shortDescription,
             theme: it.theme,
-            scenario: it.scenario || {}
+            scenario: it.scenario
           }))
           return
         }
@@ -101,9 +115,18 @@ export const useSessionStore = defineStore('session', {
     startSelectedScenario() {
       const selected = this.selectedScenario
       if (!selected) return false
+      if (!isValidScenarioDefinition(selected.scenario)) {
+        console.error('Invalid scenario definition for selected scenario', selected.id)
+        return false
+      }
 
       this.engine = createScenarioEngine(selected.scenario)
       this.currentStep = this.engine.getStep()
+      if (!this.currentStep) {
+        console.error('Scenario engine could not resolve first step', selected.id)
+        this.engine = null
+        return false
+      }
       this.lastEndStep = null
       this.reflection = { ...REFLECTION_DEFAULTS }
       return true
