@@ -10,9 +10,9 @@ defineProps({
     type: String,
     required: true
   },
-  estimatedMinutes: {
-    type: Number,
-    default: 3
+  theme: {
+    type: String,
+    required: true
   },
   loading: Boolean
 })
@@ -25,7 +25,7 @@ defineEmits(['start'])
     <div class="scenario-card__content">
       <h2>{{ title }}</h2>
       <p class="scenario-card__description">{{ description }}</p>
-      <p class="scenario-card__meta">{{ estimatedMinutes }} min</p>
+      <p class="scenario-card__meta">{{ theme }}</p>
     </div>
 
     <AppButton :disabled="loading" @click="$emit('start')">

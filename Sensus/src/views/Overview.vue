@@ -48,8 +48,8 @@ function leaveSession() {
   <main class="page-shell page-shell--overview page-shell--top">
     <section class="page-header">
       <div class="page-header__copy">
-        <p class="page-kicker">Overzicht</p>
         <h1>Kies een scenario</h1>
+        <p>Kies een situatie die je wil verkennen</p>
         <p class="page-intro">
           Code: <strong>{{ store.enteredCode }}</strong>
         </p>
@@ -66,7 +66,7 @@ function leaveSession() {
         :key="scenario.id"
         :title="scenario.title"
         :description="scenario.shortDescription"
-        :estimated-minutes="scenario.estimatedMinutes"
+        :theme="scenario.theme"
         :loading="loadingScenarioId === scenario.id"
         @start="openScenario(scenario.id)"
       />

@@ -40,14 +40,14 @@ export const mockScenarios = [
     id: 'feestje',
     title: 'Feestje en grenzen',
     shortDescription: 'Je reageert op een situatie op een feestje.',
-    estimatedMinutes: 3,
+    theme: 'Feestje',
     scenario: mockScenario
   },
   {
     id: 'groepschat',
     title: 'Groepschat en respect',
     shortDescription: 'Je beslist hoe je omgaat met groepsdruk online.',
-    estimatedMinutes: 3,
+    theme: 'Groepschat',
     scenario: mockScenarioTwo
   }
 ]
