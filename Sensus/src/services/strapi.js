@@ -1,6 +1,6 @@
 const RAW_BASE = import.meta?.env?.VITE_STRAPI_URL || ''
 const BASE = RAW_BASE.replace(/\/$/, '')
-const HAS_STRAPI = Boolean(BASE) && !BASE.includes('your-strapi-url')
+const HAS_STRAPI = Boolean(BASE)
 
 async function safeJson(res) {
   try {
