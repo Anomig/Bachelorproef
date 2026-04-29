@@ -1,28 +1,40 @@
 # Bachelorproef
 
-   cd Sensus
-   npm install
-   npm run dev
+cd Sensus
+npm install
+npm run dev
 
-   pwa installed
-   vue-router geïnstalleerd
+PWA and vue-router zijn geïnstalleerd.
 
-Start Strapi in watch mode. (Changes in Strapi project files will trigger a server restart)
-   npm run develop
-          
-   Start Strapi without watch mode.
-   npm run start
-          
-   Build Strapi admin panel.
-      pm run build
-          
-   Deploy Strapi project.
-   npm run deploy
-          
-   Display all available commands.
-   npm run strapi
+Strapi (CMS): start in watch mode from `sensus-cms`:
 
-   To get started run
-          
-   cd C:\Users\goyva\Anomi\Bachelorproef\Sensus_Naomi\sensus-cms
-   npm run develop
+```bash
+cd sensus-cms
+npm install
+npm run develop
+```
+
+Build admin panel:
+
+```bash
+npm run build
+```
+
+Quick frontend + env setup:
+
+1. Copy the example environment file:
+
+```bash
+cd Sensus
+cp .env.example .env
+# edit .env and fill values
+```
+
+2. Run the frontend:
+
+```bash
+npm install
+npm run dev
+```
+
+Set `VITE_STRAPI_URL` to your Strapi base URL (e.g. `http://localhost:1337`) and fill Supabase vars (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) in `Sensus/.env`.

@@ -1,21 +1,59 @@
-const API = "https://your-strapi-url/api"
+const RAW_BASE = import.meta?.env?.VITE_STRAPI_URL || ''
+const BASE = RAW_BASE.replace(/\/$/, '')
+const HAS_STRAPI = Boolean(BASE) && !BASE.includes('your-strapi-url')
 
-export async function fetchScenarios(){
-
-  const res = await fetch(`${API}/scenarios?populate=*`)
-
-  const data = await res.json()
-
-  return data.data
-
+async function safeJson(res) {
+  try {
+    return await res.json()
+  } catch (e) {
+    return null
+  }
 }
 
-export async function fetchScenario(id){
+export async function fetchScenarios() {
+  if (!HAS_STRAPI) {
+    return []
+  }
 
-  const res = await fetch(`${API}/scenarios/${id}?populate=deep`)
+  const API = `${BASE}/api`
+  try {
+    const res = await fetch(`${API}/scenarios?populate=*`)
+    const data = await safeJson(res)
+    if (!data || !data.data) return []
 
-  const data = await res.json()
+    return data.data.map(item => ({
+      id: String(item.id),
+      title: item.attributes.title,
+      shortDescription: item.attributes.description || '',
+      theme: item.attributes.theme || '',
+      scenario: item.attributes.engine_json || null
+    }))
+  } catch (err) {
+    console.error('fetchScenarios error', err)
+    return []
+  }
+}
 
-  return data.data
+export async function fetchScenario(id) {
+  if (!HAS_STRAPI) {
+    return null
+  }
 
+  const API = `${BASE}/api`
+  try {
+    const res = await fetch(`${API}/scenarios/${id}?populate=deep`)
+    const data = await safeJson(res)
+    if (!data || !data.data) return null
+    const item = data.data
+    return {
+      id: String(item.id),
+      title: item.attributes.title,
+      shortDescription: item.attributes.description || '',
+      theme: item.attributes.theme || '',
+      scenario: item.attributes.engine_json || null
+    }
+  } catch (err) {
+    console.error('fetchScenario error', err)
+    return null
+  }
 }

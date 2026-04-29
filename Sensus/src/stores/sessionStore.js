@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { createScenarioEngine } from '../engine/scenarioEngine'
 import { mockScenarios } from '../data/mockScenarios'
+import { fetchScenarios } from '../services/strapi'
 
 const REFLECTION_DEFAULTS = {
   impact: '',
@@ -56,11 +57,30 @@ export const useSessionStore = defineStore('session', {
       this.enteredCode = normalized
       this.joined = true
       this.joinError = ''
+      // fire-and-forget: load scenarios from Strapi if configured
       this.loadAvailableScenarios()
       return true
     },
 
-    loadAvailableScenarios() {
+    async loadAvailableScenarios() {
+      try {
+        const items = await fetchScenarios()
+        if (items && items.length) {
+          // ensure each scenario has the expected `scenario` object
+          this.availableScenarios = items.map(it => ({
+            id: it.id,
+            title: it.title,
+            shortDescription: it.shortDescription,
+            theme: it.theme,
+            scenario: it.scenario || {}
+          }))
+          return
+        }
+      } catch (e) {
+        // fallthrough to mocks on error
+        console.error('loadAvailableScenarios error', e)
+      }
+
       this.availableScenarios = mockScenarios
     },
 
@@ -109,11 +129,28 @@ export const useSessionStore = defineStore('session', {
       return nextStep
     },
 
-    saveReflection(payload) {
+    async saveReflection(payload) {
       this.reflection = {
         impact: payload?.impact || '',
         lesson: payload?.lesson || '',
         nextTime: payload?.nextTime || ''
+      }
+
+      const sessionId = this.sessionId
+      const scenarioId = this.selectedScenarioId
+
+      if (!sessionId || !scenarioId) {
+        console.error('persist reflection skipped: missing sessionId or scenarioId')
+        return false
+      }
+
+      try {
+        const { saveReflection } = await import('../services/supabaseService')
+        await saveReflection({ sessionId, scenarioId, reflection: this.reflection })
+        return true
+      } catch (e) {
+        console.error('persist reflection failed or could not import supabaseService', e)
+        return false
       }
     },
 

@@ -24,8 +24,8 @@ onMounted(() => {
   }
 })
 
-function submitReflection() {
-  store.saveReflection({
+async function submitReflection() {
+  await store.saveReflection({
     impact: form.impact,
     lesson: form.lesson,
     nextTime: form.nextTime
