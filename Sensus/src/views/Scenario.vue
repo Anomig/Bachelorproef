@@ -50,8 +50,8 @@ function choose(option) {
 <template>
   <main class="page-shell page-shell--scenario">
     <section v-if="step" class="page-card">
-      <p class="page-kicker">{{ scenarioTitle }}</p>
-      <p class="page-intro">
+      <h1 class="page-kicker page-kicker--scenario">{{ scenarioTitle }}</h1>
+      <p class="page-intro page-intro--scenario">
         {{ step.text }}
       </p>
 

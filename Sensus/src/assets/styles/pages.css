@@ -79,13 +79,28 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--purple-600);
-  margin: 0;
+  margin: 0 0 var(--space-12) 0;
 }
 
 .page-intro {
   color: var(--color-text);
   max-width: 70ch;
   line-height: 1.6;
+}
+
+/* Scenario-specific tweaks */
+.page-kicker--scenario {
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--color-text-strong);
+  font-size: var(--fs-lg);
+}
+
+.page-intro--scenario {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-medium);
+  color: var(--color-text);
+  margin-top: var(--space-8);
 }
 
 /* Forms */
