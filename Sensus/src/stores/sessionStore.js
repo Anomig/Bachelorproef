@@ -32,7 +32,7 @@ export const useSessionStore = defineStore('session', {
 
   actions: {
     joinWithCode(code) {
-      const normalized = String(code || '').trim().toUpperCase()
+      const normalized = String(code || '').trim()
 
       if (!normalized) {
         this.joinError = 'Vul een code in.'
@@ -40,8 +40,14 @@ export const useSessionStore = defineStore('session', {
         return false
       }
 
-      if (normalized !== 'SEN123') {
-        this.joinError = 'Ongeldige code. Probeer SEN123 voor de demo.'
+      if (!/^\d{4}$/.test(normalized)) {
+        this.joinError = 'Voer een 4-cijferige code in. Bijv. 1234'
+        this.joined = false
+        return false
+      }
+
+      if (normalized !== '1234') {
+        this.joinError = 'Ongeldige code. Probeer 1234 voor de demo.'
         this.joined = false
         return false
       }

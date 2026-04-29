@@ -11,11 +11,7 @@
 }
 
 .page-shell--join {
-  background:
-    radial-gradient(circle at 5% 100%, rgba(2, 40, 55, 0.35) 0%, rgba(2, 40, 55, 0) 45%),
-    radial-gradient(circle at 100% 0%, rgba(165, 10, 126, 0.22) 0%, rgba(165, 10, 126, 0) 40%),
-    linear-gradient(135deg, #022837 0%, #053c52 50%, #f7f4f2 50%, #f7f4f2 100%);
-  background-attachment: fixed;
+  background: var(--color-background);
 }
 
 .page-shell--overview {
