@@ -1,4 +1,4 @@
-// Bundelt de twee demo-scenario's in de lijststructuur die de overview verwacht.
+// Bundelt demo-scenario's in de lijststructuur die de overview verwacht.
 import { mockScenario } from './mockScenario'
 
 const mockScenarioTwo = {
@@ -38,10 +38,10 @@ const mockScenarioTwo = {
 
 export const mockScenarios = [
   {
-    id: 'feestje',
-    title: 'Feestje en grenzen',
-    shortDescription: 'Je reageert op een situatie op een feestje.',
-    theme: 'Feestje',
+    id: 'online-gesprek-loopt-vast',
+    title: 'Online gesprek loopt vast',
+    shortDescription: 'Je verkent een gesprek dat stilvalt en hoe je daarop reageert.',
+    theme: 'Online chat',
     scenario: mockScenario
   },
   {

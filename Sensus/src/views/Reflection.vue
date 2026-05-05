@@ -1,18 +1,14 @@
 <script setup>
-// Reflectiescherm: verzamelt tekstvelden na afloop en bewaart ze via de store/service.
-import { reactive, onMounted } from 'vue'
+// Reflectiescherm: vraagt om een korte reflectie na de scenario-flow.
+import { computed, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSessionStore } from '../stores/sessionStore'
-import AppButton from '../components/AppButton.vue'
 
 const router = useRouter()
 const store = useSessionStore()
 
-const form = reactive({
-  impact: '',
-  lesson: '',
-  nextTime: ''
-})
+const step = computed(() => store.currentStep)
+const form = reactive({ answer: '' })
 
 onMounted(() => {
   if (!store.joined) {
@@ -20,62 +16,54 @@ onMounted(() => {
     return
   }
 
-  if (!store.lastEndStep) {
+  if (store.currentStep?.type !== 'reflection') {
     router.replace('/overview')
+    return
   }
 })
 
 async function submitReflection() {
   await store.saveReflection({
-    impact: form.impact,
-    lesson: form.lesson,
-    nextTime: form.nextTime
+    lesson: form.answer
   })
 
-  store.backToOverview()
-  router.push('/overview')
+  router.push('/end')
+}
+
+function stopSession() {
+  store.leaveSession()
+  router.push('/start')
 }
 </script>
 
 <template>
   <main class="page-shell page-shell--reflection">
-    <section class="page-card">
-      <p class="page-kicker">Reflectie</p>
-      <h1>Neem even tijd om na te denken</h1>
+    <section class="reflection-screen">
+      <header class="reflection-header">
+        <h1 class="reflection-title">{{ step?.title || 'Reflectie' }}</h1>
+        <p class="reflection-subtitle">{{ step?.subtitle || '' }}</p>
+        <p v-if="step?.body" class="reflection-body">{{ step.body }}</p>
+      </header>
 
-      <div class="summary-box">
-        <p><strong>Uitkomst:</strong> {{ store.lastEndStep?.text }}</p>
-      </div>
+      <label class="reflection-question" for="reflection-answer">
+        {{ step?.prompt || 'Welke signalen ga je volgende keer sneller oppikken?' }}
+      </label>
 
-      <label class="form-label" for="impact">Hoe kwam dit op je over?</label>
       <textarea
-        id="impact"
-        v-model="form.impact"
-        class="form-textarea"
-        rows="3"
+        id="reflection-answer"
+        v-model="form.answer"
+        class="reflection-textarea"
+        rows="5"
+        :placeholder="step?.placeholder || 'Vul hier je antwoord in.'"
       />
 
-      <label class="form-label" for="lesson">Wat neem je hiervan mee?</label>
-      <textarea
-        id="lesson"
-        v-model="form.lesson"
-        class="form-textarea"
-        rows="3"
-      />
-
-      <label class="form-label" for="next-time">Wat zou je volgende keer doen?</label>
-      <textarea
-        id="next-time"
-        v-model="form.nextTime"
-        class="form-textarea"
-        rows="3"
-      />
-
-      <div class="actions-row">
-        <AppButton @click="submitReflection">
-          Bevestigen
-        </AppButton>
-      </div>
+      <button class="reflection-primary" type="button" @click="submitReflection">
+        {{ step?.buttonLabel || 'Volgende' }}
+      </button>
     </section>
+
+    <button class="reflection-stop" type="button" @click="stopSession">
+      Stoppen?
+    </button>
   </main>
 </template>
