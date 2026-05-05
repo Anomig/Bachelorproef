@@ -18,6 +18,11 @@ onMounted(() => {
     return
   }
 
+  if (!store.participantInfoCompleted) {
+    router.replace('/info')
+    return
+  }
+
   if (!store.selectedScenarioId) {
     router.replace('/overview')
     return

@@ -10,6 +10,11 @@ const REFLECTION_DEFAULTS = {
   nextTime: ''
 }
 
+const PARTICIPANT_INFO_DEFAULTS = {
+  age: '',
+  gender: ''
+}
+
 function isValidScenarioDefinition(value) {
   if (!value || typeof value !== 'object') return false
   if (typeof value.start !== 'string' || !value.start) return false
@@ -28,6 +33,8 @@ export const useSessionStore = defineStore('session', {
     enteredCode: '',
     joined: false,
     joinError: '',
+    participantInfo: { ...PARTICIPANT_INFO_DEFAULTS },
+    participantInfoCompleted: false,
     availableScenarios: [],
     selectedScenarioId: null,
     engine: null,
@@ -70,8 +77,26 @@ export const useSessionStore = defineStore('session', {
       this.enteredCode = normalized
       this.joined = true
       this.joinError = ''
+      this.participantInfo = { ...PARTICIPANT_INFO_DEFAULTS }
+      this.participantInfoCompleted = false
       // fire-and-forget: load scenarios from Strapi if configured
       this.loadAvailableScenarios()
+      return true
+    },
+
+    saveParticipantInfo(payload) {
+      const age = String(payload?.age || '').trim()
+      const gender = String(payload?.gender || '').trim()
+
+      if (!age || !gender) {
+        return false
+      }
+
+      this.participantInfo = {
+        age,
+        gender
+      }
+      this.participantInfoCompleted = true
       return true
     },
 
@@ -195,6 +220,8 @@ export const useSessionStore = defineStore('session', {
       this.enteredCode = ''
       this.joined = false
       this.joinError = ''
+      this.participantInfo = { ...PARTICIPANT_INFO_DEFAULTS }
+      this.participantInfoCompleted = false
       this.availableScenarios = []
       this.selectedScenarioId = null
       this.engine = null

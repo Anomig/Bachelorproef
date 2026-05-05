@@ -1,47 +1,47 @@
 <script setup>
-// Join-scherm: valideert de sessiecode en start daarna de sessieflow.
-import { ref } from 'vue'
+// Code-scherm: valideert de sessiecode en gaat automatisch door naar de volgende stap.
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSessionStore } from '../stores/sessionStore'
-import AppButton from '../components/AppButton.vue'
 import CodeInput from '../components/CodeInput.vue'
 
 const router = useRouter()
 const store = useSessionStore()
 
 const code = ref('')
+const isJoining = ref(false)
+
+watch(code, (value) => {
+  if (isJoining.value) return
+  if (String(value || '').length === 4) {
+    join()
+  }
+})
 
 function join() {
+  if (isJoining.value) return
+
+  isJoining.value = true
   const ok = store.joinWithCode(code.value)
   if (ok) {
-    router.push('/overview')
+    router.push('/info')
+    return
   }
+
+  isJoining.value = false
 }
 </script>
 
 <template>
-  <main class="page-shell page-shell--join">
-    <section class="page-card page-card--narrow">
-      <img src="@/assets/images/Logo-groot-black.png" alt="logo-zwart">
-      <p class="page-intro">
-        Voer de code in om te starten.
-      </p>
+  <main class="page-shell page-shell--join-code">
+    <section class="join-code-screen">
+      <img class="join-code-screen__logo" src="@/assets/images/Logo-groot-black.png" alt="Sensus">
+      <h1 class="join-code-screen__title">Voer de code in om te starten.</h1>
 
-      <label class="form-label" for="code">Code</label>
       <CodeInput v-model="code" @keyup.enter="join" />
 
-      <div class="actions-row">
-        <AppButton @click="join">
-          Verder
-        </AppButton>
-      </div>
-
-      <p v-if="store.joinError" class="form-error">
+      <p v-if="store.joinError" class="join-code-screen__error">
         {{ store.joinError }}
-      </p>
-
-      <p class="form-hint">
-        Demo-code: <strong>1234</strong>
       </p>
     </section>
   </main>

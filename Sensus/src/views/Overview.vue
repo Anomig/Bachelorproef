@@ -4,7 +4,6 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSessionStore } from '../stores/sessionStore'
 import ScenarioCard from '../components/ScenarioCard.vue'
-import AppButton from '../components/AppButton.vue'
 
 const router = useRouter()
 const store = useSessionStore()
@@ -13,6 +12,11 @@ const loadingScenarioId = ref(null)
 onMounted(() => {
   if (!store.joined) {
     router.replace('/join')
+    return
+  }
+
+  if (!store.participantInfoCompleted) {
+    router.replace('/info')
     return
   }
 
@@ -39,29 +43,21 @@ function openScenario(id) {
   router.push('/scenario')
 }
 
-function leaveSession() {
-  store.leaveSession()
-  router.push('/join')
-}
 </script>
 
 <template>
-  <main class="page-shell page-shell--overview page-shell--top">
-    <section class="page-header">
-      <div class="page-header__copy">
-        <h1>Kies een scenario</h1>
-        <p>Kies een situatie die je wil verkennen</p>
-        <p class="page-intro">
-          Code: <strong>{{ store.enteredCode }}</strong>
-        </p>
-      </div>
+  <main class="page-shell page-shell--overview">
+    <button class="overview-back" type="button" @click="router.push('/before-start')">
+      <span aria-hidden="true">‹</span>
+      Terug
+    </button>
 
-      <AppButton variant="secondary" @click="leaveSession">
-        Andere code ingeven
-      </AppButton>
+    <section class="overview-header">
+      <h1>Scenario's</h1>
+      <p>Kies een situatie die je wil verkennen</p>
     </section>
 
-    <section class="scenario-grid">
+    <section class="scenario-grid overview-grid">
       <ScenarioCard
         v-for="scenario in store.availableScenarios"
         :key="scenario.id"

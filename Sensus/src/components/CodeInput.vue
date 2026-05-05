@@ -107,7 +107,7 @@ function handlePaste(event) {
   display: flex;
   gap: var(--space-12);
   justify-content: center;
-  margin: var(--space-16) 0;
+  margin: 0;
 }
 
 .code-input-group {
@@ -115,27 +115,27 @@ function handlePaste(event) {
 }
 
 .code-input {
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   text-align: center;
   font-size: var(--fs-xl);
   font-weight: var(--fw-semibold);
-  border: 2px solid var(--color-border);
+  border: none;
   border-radius: var(--radius-lg);
-  background: var(--color-surface);
+  background: var(--neutral-200);
   color: var(--color-text-strong);
+  box-shadow: inset 0 2px 2px -1px rgba(74, 74, 104, 0.1);
   transition: all 0.2s ease;
   padding: 0;
 }
 
 .code-input:hover {
-  border-color: var(--color-primary);
+  box-shadow: inset 0 2px 2px -1px rgba(74, 74, 104, 0.1), 0 0 0 1px rgba(165, 10, 126, 0.14);
 }
 
 .code-input:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px rgba(165, 10, 126, 0.15);
+  box-shadow: 0 0 0 4px rgba(165, 10, 126, 0.14), inset 0 2px 2px -1px rgba(74, 74, 104, 0.1);
 }
 
 .code-input::placeholder {
