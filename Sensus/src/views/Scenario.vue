@@ -1,11 +1,12 @@
 <script setup>
 // Scenario-scherm: toont een chatachtige flow met intro, keuzes en vervolgschermen.
 import { computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useSessionStore } from '../stores/sessionStore'
 import ChoiceButton from '../components/ChoiceButton.vue'
 
 const router = useRouter()
+const route = useRoute()
 const store = useSessionStore()
 
 const step = computed(() => store.currentStep)
@@ -65,7 +66,7 @@ function choose(option) {
 }
 
 function stopSession() {
-  router.push({ path: '/stop', query: { returnTo: '/scenario' } })
+  router.push({ path: '/stop', query: { returnTo: route.path } })
 }
 </script>
 

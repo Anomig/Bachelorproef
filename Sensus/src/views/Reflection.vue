@@ -1,10 +1,11 @@
 <script setup>
 // Reflectiescherm: vraagt om een korte reflectie na de scenario-flow.
 import { computed, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useSessionStore } from '../stores/sessionStore'
 
 const router = useRouter()
+const route = useRoute()
 const store = useSessionStore()
 
 const step = computed(() => store.currentStep)
@@ -31,8 +32,7 @@ async function submitReflection() {
 }
 
 function stopSession() {
-  store.leaveSession()
-  router.push('/start')
+  router.push({ path: '/stop', query: { returnTo: route.path } })
 }
 </script>
 

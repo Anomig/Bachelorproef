@@ -1,11 +1,10 @@
 <script setup>
 // Intro-scherm: waarschuwt de gebruiker en vraagt bevestiging om door te gaan.
-import { useRouter } from 'vue-router'
-import { useSessionStore } from '../stores/sessionStore'
+import { useRoute, useRouter } from 'vue-router'
 import AppButton from '../components/AppButton.vue'
 
 const router = useRouter()
-const store = useSessionStore()
+const route = useRoute()
 
 function goBack() {
   router.push('/info')
@@ -16,8 +15,7 @@ function continueToOverview() {
 }
 
 function stopSession() {
-  store.leaveSession()
-  router.push('/start')
+  router.push({ path: '/stop', query: { returnTo: route.path } })
 }
 </script>
 

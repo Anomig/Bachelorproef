@@ -8,6 +8,7 @@ import BeforeStartView from '../views/BeforeStartView.vue'
 import Overview from '../views/Overview.vue'
 import Scenario from '../views/Scenario.vue'
 import Reflection from '../views/Reflection.vue'
+import SafeExitView from '../views/SafeExitView.vue'
 import End from '../views/EndView.vue'
 
 const routes = [
@@ -19,6 +20,7 @@ const routes = [
   { path: '/overview', component: Overview },
   { path: '/scenario', component: Scenario },
   { path: '/reflection', component: Reflection },
+  { path: '/stop', component: SafeExitView },
   { path: '/end', component: End }
 ]
 
