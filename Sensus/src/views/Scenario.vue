@@ -68,6 +68,23 @@ function choose(option) {
 function stopSession() {
   router.push({ path: '/stop', query: { returnTo: route.path } })
 }
+
+function chooseFreeInput(payload) {
+  const option = payload?.option
+  const value = String(payload?.value || '').trim()
+
+  if (!option || !value) return
+
+  store.recordFreeChoiceInput({
+    optionKey: option.key,
+    value,
+    prompt: scenarioPrompt.value,
+    title: scenarioTitle.value
+  })
+
+  const nextStep = store.next(option.key)
+  goToReflectionIfNeeded(nextStep)
+}
 </script>
 
 <template>
@@ -111,8 +128,10 @@ function stopSession() {
         <ChoiceButton
           v-for="opt in step.options"
           :key="opt.key"
+          :option="opt"
           :label="opt.label"
-          @click="choose(opt)"
+          @choose="choose(opt)"
+          @submit-input="chooseFreeInput"
         />
         <p v-if="step.note" class="scenario-note">{{ step.note }}</p>
       </div>
