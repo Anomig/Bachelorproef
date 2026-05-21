@@ -1,37 +1,68 @@
-// Bundelt demo-scenario's in de lijststructuur die de overview verwacht.
 import { mockScenario } from './mockScenario'
 
 const mockScenarioTwo = {
   start: 'intro',
   steps: {
     intro: {
-      type: 'text',
-      text: 'Je zit in een groepschat en iemand wordt uitgelachen.',
-      next: 'choice_1'
+      type: 'intro',
+      title: 'Groepschat en respect',
+      subtitle: 'Je ziet hoe een gesprek uit de hand dreigt te lopen.',
+      buttonLabel: 'Start scenario',
+      next: 'group_chat'
     },
-    choice_1: {
+    group_chat: {
       type: 'choice',
-      text: 'Wat doe je?',
+      title: 'De groepschat',
+      subtitle: 'Iemand maakt een flauwe opmerking over een klasgenoot.',
+      messages: [
+        { time: 'Vandaag 18:10', side: 'right', text: 'haha serieus?' },
+        { side: 'left', text: 'laat die gast gewoon' }
+      ],
+      prompt: 'Wat doe jij?',
       options: [
+        { key: 'meedoen', label: 'Ik lach mee', next: 'reaction' },
+        { key: 'ingrijpen', label: 'Ik zeg dat het niet oké is', next: 'reaction' },
+        { key: 'neutraal', label: 'Ik zeg niets', next: 'reaction' }
+      ]
+    },
+    reaction: {
+      type: 'continue',
+      title: 'Reactie in de chat',
+      subtitle: 'De sfeer verandert meteen.',
+      buttonLabel: 'Volgende',
+      next: 'reflection'
+    },
+    reflection: {
+      type: 'reflection',
+      title: 'Reflectie',
+      subtitle: 'Groepsdruk kan snel groter worden dan je denkt.',
+      body: 'Je reactie heeft invloed op de sfeer in de chat.',
+      buttonLabel: 'Volgende',
+      next: 'end',
+      fields: [
         {
-          key: 'a',
-          label: 'Je lacht mee om erbij te horen',
-          next: 'end_bad'
+          key: 'impact',
+          label: 'Wat was de impact van deze situatie?',
+          placeholder: 'Hoe beïnvloedde dit de ander of de groep?',
+          required: true
         },
         {
-          key: 'b',
-          label: 'Je reageert respectvol en stopt het gesprek',
-          next: 'end_good'
+          key: 'lesson',
+          label: 'Wat heb je hieruit geleerd?',
+          placeholder: 'Welke les neem je mee?',
+          required: true
+        },
+        {
+          key: 'nextTime',
+          label: 'Wat ga je volgende keer anders doen?',
+          placeholder: 'Wat zou je anders zeggen of doen?',
+          required: true
         }
       ]
     },
-    end_bad: {
+    end: {
       type: 'end',
-      text: 'Meelachen kan kwetsend zijn en de situatie erger maken.'
-    },
-    end_good: {
-      type: 'end',
-      text: 'Je kiest voor respect en helpt de groepssfeer.'
+      text: 'Bedankt voor het invullen.'
     }
   }
 }

@@ -1,5 +1,4 @@
 <script setup>
-// Reflectiescherm: vraagt om een korte reflectie na de scenario-flow.
 import { computed, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSessionStore } from '../stores/sessionStore'
@@ -9,7 +8,13 @@ const route = useRoute()
 const store = useSessionStore()
 
 const step = computed(() => store.currentStep)
-const form = reactive({ answer: '' })
+const fields = computed(() => step.value?.fields || [])
+
+const form = reactive({
+  impact: '',
+  lesson: '',
+  nextTime: ''
+})
 
 onMounted(() => {
   if (!store.joined) {
@@ -19,13 +24,14 @@ onMounted(() => {
 
   if (store.currentStep?.type !== 'reflection') {
     router.replace('/overview')
-    return
   }
 })
 
 async function submitReflection() {
   await store.saveReflection({
-    lesson: form.answer
+    impact: form.impact,
+    lesson: form.lesson,
+    nextTime: form.nextTime
   })
 
   router.push('/end')
@@ -45,17 +51,17 @@ function stopSession() {
         <p v-if="step?.body" class="reflection-body">{{ step.body }}</p>
       </header>
 
-      <label class="reflection-question" for="reflection-answer">
-        {{ step?.prompt || 'Welke signalen ga je volgende keer sneller oppikken?' }}
-      </label>
-
-      <textarea
-        id="reflection-answer"
-        v-model="form.answer"
-        class="reflection-textarea"
-        rows="5"
-        :placeholder="step?.placeholder || 'Vul hier je antwoord in.'"
-      />
+      <div class="reflection-fields">
+        <label v-for="field in fields" :key="field.key" class="reflection-field">
+          <span class="reflection-label">{{ field.label }}</span>
+          <textarea
+            v-model="form[field.key]"
+            class="reflection-textarea"
+            rows="4"
+            :placeholder="field.placeholder"
+          />
+        </label>
+      </div>
 
       <button class="reflection-primary" type="button" @click="submitReflection">
         {{ step?.buttonLabel || 'Volgende' }}

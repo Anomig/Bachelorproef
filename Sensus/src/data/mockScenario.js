@@ -1,4 +1,4 @@
-// Voorbeeldscenario: gebruikt de nieuwe Figma-flow voor online chat en consent.
+// Voorbeeldscenario: gebruikt dezelfde flow-structuur als Strapi.
 export const mockScenario = {
   start: 'intro',
   steps: {
@@ -48,7 +48,7 @@ export const mockScenario = {
       prompt: 'Kies wat jij zou doen.',
       options: [
         { key: 'probeer_verder', label: 'Ik stuur nog iets, anders stopt het', next: 'je_probeert_verder' },
-        { key: 'ruimte', label: 'ik laat het gewoon even zo', next: 'je_geeft_ruimte' }
+        { key: 'ruimte', label: 'Ik laat het gewoon even zo', next: 'je_geeft_ruimte' }
       ],
       note: 'Beide keuzes leiden naar een andere situatie.'
     },
@@ -67,7 +67,7 @@ export const mockScenario = {
     je_geeft_ruimte: {
       type: 'continue',
       title: 'Je geeft ruimte',
-      subtitle: 'Je stuurt even niets',
+      subtitle: 'Je stuurt even niets.',
       buttonLabel: 'Volgende',
       next: 'feelings'
     },
@@ -87,12 +87,29 @@ export const mockScenario = {
       type: 'reflection',
       title: 'Reflectie',
       subtitle: 'Online is het niet altijd duidelijk wat iemand bedoelt.',
-      body:
-        'Soms zijn korte antwoorden gewoon... korte antwoorden. Maar soms zijn het ook signalen.',
-      prompt: 'Welke signalen ga je volgende keer sneller oppikken?',
-      placeholder: 'Vul hier je antwoord in.',
+      body: 'Soms zijn korte antwoorden gewoon korte antwoorden. Maar soms zijn het ook signalen.',
       buttonLabel: 'Volgende',
-      next: 'end'
+      next: 'end',
+      fields: [
+        {
+          key: 'impact',
+          label: 'Wat was de impact van deze situatie?',
+          placeholder: 'Beschrijf wat dit met jou of de ander deed.',
+          required: true
+        },
+        {
+          key: 'lesson',
+          label: 'Wat heb je hieruit geleerd?',
+          placeholder: 'Wat neem je mee uit dit scenario?',
+          required: true
+        },
+        {
+          key: 'nextTime',
+          label: 'Wat ga je volgende keer anders doen?',
+          placeholder: 'Beschrijf je volgende stap of reactie.',
+          required: true
+        }
+      ]
     },
     end: {
       type: 'end',
