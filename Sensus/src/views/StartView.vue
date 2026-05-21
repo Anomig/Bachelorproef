@@ -13,7 +13,7 @@ function goToCode() {
 <template>
   <main class="page-shell page-shell--start">
     <section class="start-screen">
-      <img class="start-screen__logo" src="@/assets/images/Logo-groot-black.png" alt="Sensus">
+      <img class="start-screen__logo" src="/images/Logo-groot-black.png" alt="Sensus">
 
       <header class="start-screen__copy">
         <h1>Oefen met grenzen en consent</h1>

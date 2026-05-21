@@ -35,7 +35,7 @@ function join() {
 <template>
   <main class="page-shell page-shell--join-code">
     <section class="join-code-screen">
-      <img class="join-code-screen__logo" src="@/assets/images/Logo-groot-black.png" alt="Sensus">
+      <img class="join-code-screen__logo" src="/images/Logo-groot-black.png" alt="Sensus">
       <h1 class="join-code-screen__title">Voer de code in om te starten.</h1>
 
       <CodeInput v-model="code" @keyup.enter="join" />

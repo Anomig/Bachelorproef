@@ -24,17 +24,17 @@ function stopSession() {
 <template>
   <main class="page-shell page-shell--before-start">
     <button class="before-start__back" type="button" @click="goBack">
-      <span aria-hidden="true">‹</span>
-      Terug
+      <span class="before-start__back-icon" aria-hidden="true">‹</span>
+      <span>Terug</span>
     </button>
 
     <section class="before-start-screen">
       <div class="before-start-screen__icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" role="presentation">
-          <path d="M12 2.5l6 2.6v4.8c0 5.2-2.9 8.7-6 11.1-3.1-2.4-6-5.9-6-11.1V5.1L12 2.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-          <path d="M12 7v6.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <circle cx="12" cy="16.7" r="0.9" fill="currentColor"/>
-        </svg>
+        <img
+          src="/images/fi-rr-shield-exclamation.png"
+          alt=""
+          class="before-start-screen__icon-image"
+        >
       </div>
 
       <div class="before-start-screen__copy">

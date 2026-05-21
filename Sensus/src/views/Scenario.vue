@@ -65,8 +65,7 @@ function choose(option) {
 }
 
 function stopSession() {
-  store.leaveSession()
-  router.push('/start')
+  router.push({ path: '/stop', query: { returnTo: '/scenario' } })
 }
 </script>
 
