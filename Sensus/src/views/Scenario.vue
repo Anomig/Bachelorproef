@@ -72,7 +72,7 @@ function stopSession() {
 
 <template>
   <main class="page-shell page-shell--scenario">
-    <button class="scenario-back" type="button" @click="router.push('/overview')">
+    <button v-if="step?.type === 'intro'" class="scenario-back" type="button" @click="router.push('/overview')">
       <span aria-hidden="true">‹</span>
       Terug
     </button>

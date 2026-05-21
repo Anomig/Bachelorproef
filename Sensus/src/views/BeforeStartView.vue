@@ -21,10 +21,6 @@ function stopSession() {
 
 <template>
   <main class="page-shell page-shell--before-start">
-    <button class="before-start__back" type="button" @click="goBack">
-      <span class="before-start__back-icon" aria-hidden="true">‹</span>
-      <span>Terug</span>
-    </button>
 
     <section class="before-start-screen">
       <div class="before-start-screen__icon" aria-hidden="true">

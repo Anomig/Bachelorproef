@@ -57,11 +57,6 @@ function continueToOverview() {
 <template>
   <main class="page-shell page-shell--profile">
     <div class="profile-screen">
-      <button class="profile-back" type="button" @click="goBack">
-        <span class="profile-back__icon" aria-hidden="true">‹</span>
-        <span>Terug</span>
-      </button>
-
       <section class="profile-content">
         <header class="profile-header">
           <h1 class="profile-title">Informatie over jou</h1>
