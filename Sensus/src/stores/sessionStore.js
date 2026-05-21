@@ -40,7 +40,8 @@ export const useSessionStore = defineStore('session', {
     engine: null,
     currentStep: null,
     lastEndStep: null,
-    reflection: { ...REFLECTION_DEFAULTS }
+    reflection: { ...REFLECTION_DEFAULTS },
+    freeChoiceInputs: []
   }),
 
   getters: {
@@ -213,6 +214,7 @@ export const useSessionStore = defineStore('session', {
       this.currentStep = null
       this.lastEndStep = null
       this.selectedScenarioId = null
+      this.freeChoiceInputs = []
     },
 
     leaveSession() {
@@ -228,6 +230,17 @@ export const useSessionStore = defineStore('session', {
       this.currentStep = null
       this.lastEndStep = null
       this.reflection = { ...REFLECTION_DEFAULTS }
-    }
+      this.freeChoiceInputs = []
+    },
+    
+    recordFreeChoiceInput(payload) {
+      this.freeChoiceInputs.push({
+        optionKey: payload?.optionKey || '',
+        value: payload?.value || '',
+        prompt: payload?.prompt || '',
+        title: payload?.title || '',
+        createdAt: new Date().toISOString()
+      })
+    },
   }
 })

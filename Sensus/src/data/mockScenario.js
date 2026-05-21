@@ -23,7 +23,7 @@ export const mockScenario = {
         { key: 'chill', label: 'Chill', next: 'first_signal' },
         { key: 'neutraal', label: 'Neutraal', next: 'first_signal' },
         { key: 'onzeker', label: 'Onzeker', next: 'first_signal' },
-        { key: 'input', label: 'Eigen input', next: 'first_signal' }
+        { key: 'input', label: 'Eigen input', next: 'first_signal', inputMode: 'freeText', placeholder: 'Typ je eigen gevoel...', submitLabel: 'Verstuur' }
       ]
     },
     first_signal: {
@@ -80,7 +80,7 @@ export const mockScenario = {
         { key: 'teleurstellend', label: 'Teleurstellend', next: 'reflection' },
         { key: 'chill', label: 'Chill', next: 'reflection' },
         { key: 'verwarrend', label: 'Verwarrend', next: 'reflection' },
-        { key: 'input', label: 'Eigen input', next: 'reflection' }
+        { key: 'input', label: 'Eigen input', next: 'reflection', inputMode: 'freeText', placeholder: 'Typ je eigen gevoel...', submitLabel: 'Verstuur' }
       ]
     },
     reflection: {
