@@ -22,7 +22,7 @@
         <tr v-for="s in sessions" :key="s.id">
           <td><input type="checkbox" /></td>
           <td>{{ s.name }}</td>
-          <td>Online gedrag</td>
+          <td>{{ s.scenario }}</td>
           <td>{{ s.date }}</td>
           <td>{{ s.start }}</td>
           <td>{{ s.end }}</td>
@@ -32,26 +32,37 @@
     </div>
 
     <div style="margin-top:18px" class="metrics-grid-4">
-      <KpiCard label="Sessies deze week" value="128" meta="↑ 12% deze week" />
-      <KpiCard label="Voltooid" value="70%" />
-      <KpiCard label="Gem. sessieduur" value="11 min" />
-      <KpiCard label="Afhaak %" value="32%" meta="↑ 37% t.o.v. vorige week" />
+      <KpiCard label="Sessies deze week" :value="metrics.thisWeek" meta="↑ 12% deze week" />
+      <KpiCard label="Voltooid" :value="`${metrics.completed}%`" />
+      <KpiCard label="Gem. sessieduur" :value="metrics.averageDuration" />
+      <KpiCard label="Afhaak %" :value="`${metrics.dropout}%`" meta="↑ 37% t.o.v. vorige week" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import DataTable from '../components/DataTable.vue'
 import KpiCard from '../components/KpiCard.vue'
+import sessionsService from '../services/sessionsService'
 
-const cols = [{key:'c1',label:''},{key:'c2',label:'Naam/id'},{key:'c3',label:'Scenario'},{key:'c4',label:'Datum'},{key:'c5',label:'Start'},{key:'c6',label:'Einde'},{key:'c7',label:''}]
+const cols = [
+  { key: 'c1', label: '' },
+  { key: 'c2', label: 'Naam/id' },
+  { key: 'c3', label: 'Scenario' },
+  { key: 'c4', label: 'Datum' },
+  { key: 'c5', label: 'Start' },
+  { key: 'c6', label: 'Einde' },
+  { key: 'c7', label: '' }
+]
 
-const sessions = ref([
-  { id: '1abh', name:'1abh', date:'17 dec 2025', start:'14:03', end:'14:14', status:'done' },
-  { id: 'lp2', name:'lp2', date:'17 dec 2025', start:'14:07', end:'14:23', status:'done' },
-  { id: 'mpj6', name:'mpj6', date:'17 dec 2025', start:'14:07', end:'14:10', status:'stopped' }
-])
+const sessions = ref<any[]>([])
+const metrics = ref({ thisWeek: 128, completed: 70, averageDuration: '11 min', dropout: 32 })
+
+onMounted(async ()=>{
+  sessions.value = await sessionsService.listSessions()
+  metrics.value = await sessionsService.getMetrics()
+})
 
 const query = ref('')
 const filterScenario = ref('')

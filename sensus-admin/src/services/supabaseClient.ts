@@ -1,22 +1,18 @@
-// Lightweight wrapper to initialize Supabase client only when env vars are present
-import type { SupabaseClient } from '@supabase/supabase-js'
+// Keep only env access here so the admin app can be prepared without the Supabase package installed yet.
+// When you're ready to connect, install `@supabase/supabase-js` and swap this helper to a real client.
 
-let client: SupabaseClient | null = null
+export type SupabaseEnvConfig = {
+  url: string
+  anonKey: string
+}
 
-export function getSupabaseClient(){
-  if(client) return client
+export function getSupabaseEnv(): SupabaseEnvConfig | null {
   const url = import.meta.env.VITE_SUPABASE_URL
-  const key = import.meta.env.VITE_SUPABASE_ANON_KEY
-  if(!url || !key) return null
-  try{
-    // dynamic import so project doesn't fail if package not installed yet
-    // (installer step will add @supabase/supabase-js when ready)
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { createClient } = require('@supabase/supabase-js') as any
-    client = createClient(url, key)
-    return client
-  }catch(e){
-    console.warn('Supabase client not available:', e)
-    return null
-  }
+  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+  if (!url || !anonKey) return null
+  return { url, anonKey }
+}
+
+export function hasSupabaseConfig(): boolean {
+  return Boolean(getSupabaseEnv())
 }

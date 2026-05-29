@@ -16,19 +16,19 @@
     <div class="metrics-grid-4">
       <div class="card"> 
         <div class="label">Sessies</div>
-        <div class="value">689</div>
+        <div class="value">{{ snapshot.sessions }}</div>
       </div>
       <div class="card">
         <div class="label">Voltooid</div>
-        <div class="value">70%</div>
+        <div class="value">{{ snapshot.completed }}%</div>
       </div>
       <div class="card">
         <div class="label">Gem. sessieduur</div>
-        <div class="value">11 min</div>
+        <div class="value">{{ snapshot.averageDuration }}</div>
       </div>
       <div class="card">
         <div class="label">Afhaak %</div>
-        <div class="value">32%</div>
+        <div class="value">{{ snapshot.dropout }}%</div>
       </div>
     </div>
 
@@ -41,10 +41,10 @@
       </div>
 
       <div style="margin-top:18px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
-        <div class="card small">Sessies deze week<br/><strong>23</strong></div>
-        <div class="card small">Voltooid<br/><strong>95.7%</strong></div>
-        <div class="card small">Gem. sessieduur<br/><strong>4 min</strong></div>
-        <div class="card small">Afhaak %<br/><strong>-50%</strong></div>
+        <div class="card small">Sessies deze week<br/><strong>{{ snapshot.thisWeek }}</strong></div>
+        <div class="card small">Voltooid<br/><strong>{{ snapshot.completed }}%</strong></div>
+        <div class="card small">Gem. sessieduur<br/><strong>{{ snapshot.averageDuration }}</strong></div>
+        <div class="card small">Afhaak %<br/><strong>{{ snapshot.dropout }}%</strong></div>
       </div>
 
       <div style="margin-top:18px">
@@ -54,8 +54,13 @@
             <tr><th>Gebruiker/id</th><th>Datum</th><th>Leeftijd</th><th>Gender</th><th>Reflectie</th></tr>
           </thead>
           <tbody>
-            <tr><td>r85n5Te8gG</td><td>17 dec 2025</td><td>17</td><td>V</td><td>Ik vind het soms lastig om signalen van een ander te herkennen.</td></tr>
-            <tr><td>Ye8Pr5f92Ne</td><td>17 dec 2025</td><td>17</td><td>M</td><td>Ik ben heel open, en merk dat mensen daardoor soms foute aannemen hebben.</td></tr>
+            <tr v-for="r in reflections" :key="r.userId">
+              <td>{{ r.userId }}</td>
+              <td>{{ r.date }}</td>
+              <td>{{ r.age }}</td>
+              <td>{{ r.gender }}</td>
+              <td>{{ r.reflection }}</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -70,7 +75,17 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import ChartPie from '../components/ChartPie.vue'
+import analyticsService from '../services/analyticsService'
+
+const snapshot = ref({ sessions: 689, completed: 70, averageDuration: '11 min', dropout: 32, offline: 30, thisWeek: 128 })
+const reflections = ref<any[]>([])
+
+onMounted(async ()=>{
+  snapshot.value = await analyticsService.getSnapshot('all')
+  reflections.value = await analyticsService.listReflections()
+})
 </script>
 
 <style scoped>
