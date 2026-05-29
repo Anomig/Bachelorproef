@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import mockService from '../services/mockService.ts'
+import scenariosService from '../services/scenariosService'
 
 import FormField from '../components/FormField.vue'
 import AppButton from '../components/AppButton.vue'
@@ -43,13 +43,13 @@ const router = useRouter()
 const id = route.params.id
 const scenario = ref({ id: '', title: 'Laden...', description: '' })
 
-onMounted(()=>{
-  const found = mockService.findScenario(id as any)
+onMounted(async ()=>{
+  const found = await scenariosService.findScenario(id as any)
   if(found) scenario.value = { ...found }
 })
 
-function save(){
-  mockService.updateScenario(id as any, { title: scenario.value.title, description: scenario.value.description })
+async function save(){
+  await scenariosService.updateScenario(id as any, { title: scenario.value.title, description: scenario.value.description })
   router.push(`/scenarios/${id}`)
 }
 </script>

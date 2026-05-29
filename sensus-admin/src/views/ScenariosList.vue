@@ -54,9 +54,13 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import mockService from '../services/mockService.ts'
+import scenariosService from '../services/scenariosService'
 
-const scenariosList = ref(mockService.listScenarios())
+const scenariosList = ref([])
+;(async ()=>{
+  const list = await scenariosService.listScenarios()
+  scenariosList.value = list || []
+})()
 const query = ref('')
 const status = ref('Alle statussen')
 const theme = ref('Alle thema\'s')

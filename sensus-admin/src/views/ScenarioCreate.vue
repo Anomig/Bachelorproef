@@ -16,14 +16,15 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import FormField from '../components/FormField.vue'
 import AppButton from '../components/AppButton.vue'
-import mockService from '../services/mockService.ts'
+import scenariosService from '../services/scenariosService'
 
 const title = ref('')
 const description = ref('')
 const router = useRouter()
 
-function create(){
-  const s = mockService.createScenario({ title: title.value || 'Nieuw scenario', description: description.value || '' })
-  router.push(`/scenarios/${s.id}`)
+async function create(){
+  const payload = { title: title.value || 'Nieuw scenario', description: description.value || '' }
+  const s = await scenariosService.createScenario(payload)
+  if(s && s.id) router.push(`/scenarios/${s.id}`)
 }
 </script>

@@ -62,14 +62,15 @@
     </div>
 
     <div style="margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
-      <div class="card">Grafiek: Mannen (placeholder)</div>
-      <div class="card">Grafiek: Vrouwen (placeholder)</div>
-      <div class="card">Grafiek: Non-binair (placeholder)</div>
+      <div class="card"><ChartPie /></div>
+      <div class="card"><ChartPie /></div>
+      <div class="card"><ChartPie /></div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import ChartPie from '../components/ChartPie.vue'
 </script>
 
 <style scoped>
@@ -77,3 +78,4 @@
 .value{font-size:26px;color:var(--color-text-strong);font-weight:700;margin-top:6px}
 .small{padding:12px}
 </style>
+
