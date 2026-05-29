@@ -372,29 +372,292 @@
   width: 220px;
   background: var(--color-surface);
   border-right: 1px solid var(--color-border);
-  padding: var(--space-24);
+  padding: var(--space-24) var(--space-18);
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
 }
 
-.sidebar h3 {
-  margin: 0 0 var(--space-24) 0;
-  font-size: var(--fs-lg);
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 0 10px;
 }
 
-.sidebar nav ul { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-16); }
-.sidebar nav a { color: var(--color-text); text-decoration: none; display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 8px; }
-.sidebar nav a.router-link-active, .sidebar nav a.active {
+.brand-logo {
+  width: 76px;
+  height: 76px;
+  object-fit: contain;
+}
+
+.sidebar-nav {
+  display: grid;
+  gap: 8px;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: var(--space-20);
+  border-top: 1px solid var(--color-border);
+}
+
+.nav-item {
+  color: var(--color-text);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border-radius: 12px;
+  font-weight: var(--fw-medium);
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover {
+  background: var(--purple-100);
+  text-decoration: none;
+}
+
+.nav-item.router-link-active,
+.nav-item.active {
   background: linear-gradient(90deg, var(--purple-600), var(--purple-500));
   color: var(--neutral-100);
-  box-shadow: 0 6px 18px rgba(133,20,95,0.12);
+  box-shadow: 0 6px 18px rgba(133, 20, 95, 0.12);
 }
 
-.sidebar nav a { padding: 10px 12px; }
+.nav-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  flex: 0 0 18px;
+}
+
+.nav-item.router-link-active .nav-icon,
+.nav-item.active .nav-icon {
+  filter: brightness(0) invert(1);
+}
+
+.workspace {
+  flex: 1;
+  min-width: 0;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-24);
+  padding: var(--space-20) var(--space-28) var(--space-16);
+  background: linear-gradient(180deg, rgba(247, 244, 242, 0.98), rgba(247, 244, 242, 0.88));
+  backdrop-filter: blur(8px);
+}
+
+.topbar-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: min(100%, 360px);
+  max-width: 420px;
+  width: 38vw;
+  background: var(--color-surface);
+  border: 1px solid rgba(2, 40, 55, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(2, 40, 55, 0.08);
+  padding: 11px 14px;
+}
+
+.topbar-search input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  padding: 0;
+  color: var(--color-text-strong);
+}
+
+.search-icon {
+  color: var(--color-text);
+  opacity: 0.8;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.topbar-icon-btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.topbar-icon-btn img {
+  width: 24px;
+  height: 24px;
+}
+
+.profile-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0 4px 8px;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--purple-600), var(--blue-600));
+  color: var(--neutral-100);
+  font-size: 13px;
+  font-weight: var(--fw-semibold);
+}
+
+.profile-meta {
+  display: grid;
+  line-height: 1.1;
+}
+
+.profile-name {
+  color: var(--color-text-strong);
+  font-weight: var(--fw-medium);
+}
+
+.profile-role {
+  color: var(--color-text);
+  font-size: var(--fs-sm);
+}
+
+.profile-caret {
+  color: var(--color-text);
+  font-size: 18px;
+  margin-left: 2px;
+}
 
 .content {
   flex: 1;
-  padding: var(--space-24);
+  padding: 0 var(--space-28) var(--space-28);
   box-sizing: border-box;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-16);
+  margin: var(--space-12) 0 var(--space-16);
+}
+
+.page-subnav {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: var(--space-16);
+}
+
+.tab {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  padding: 8px 4px;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+
+.tab.active {
+  color: var(--color-text-strong);
+  border-bottom-color: var(--color-text-strong);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.toolbar .search-input,
+.toolbar .select,
+.toolbar input,
+.toolbar select {
+  min-height: 42px;
+}
+
+.soft-card {
+  background: var(--neutral-100);
+}
+
+.metrics-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.metrics-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.metrics-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 16px;
+}
+
+.panel-title {
+  margin-bottom: 12px;
+}
+
+.table-shell {
+  overflow: hidden;
+}
+
+.table-shell table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-shell thead th {
+  font-weight: var(--fw-semibold);
+  text-align: left;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.table-shell tbody td {
+  padding: 14px 0;
+  border-bottom: 1px dashed var(--color-border);
+  color: var(--color-text);
+}
+
+.table-shell tbody tr:last-child td {
+  border-bottom: none;
 }
 
 /* Standard card used across admin screens */
@@ -417,4 +680,26 @@
 
 @media (max-width: 768px) {
   .sidebar { display: none; }
+
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .topbar-search {
+    width: 100%;
+    max-width: none;
+  }
+
+  .topbar-actions {
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .dashboard-grid,
+  .metrics-grid-4,
+  .metrics-grid-3,
+  .metrics-grid-2 {
+    grid-template-columns: 1fr;
+  }
 }

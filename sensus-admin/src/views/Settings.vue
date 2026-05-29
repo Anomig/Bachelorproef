@@ -1,13 +1,13 @@
 <template>
   <div>
-    <div style="display:flex;justify-content:space-between;align-items:center">
+    <div class="page-header">
       <h1>Instellingen</h1>
       <button class="btn-primary">Opslaan</button>
     </div>
 
-    <div class="card" style="margin-top:16px;max-width:720px">
+    <div class="card" style="max-width:720px">
       <label>Profielfoto</label>
-      <div style="margin:8px 0 16px"><img src="/src/assets/hero.png" alt="avatar" style="width:80px;border-radius:50%"/></div>
+      <div style="margin:8px 0 16px; width:80px; height:80px; border-radius:50%; display:grid; place-items:center; background: linear-gradient(135deg, var(--purple-600), var(--blue-600)); color: var(--neutral-100); font-weight: var(--fw-semibold);">PD</div>
 
       <label>Naam</label>
       <input placeholder="Naam" />

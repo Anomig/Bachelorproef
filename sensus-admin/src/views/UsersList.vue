@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div style="display:flex;justify-content:space-between;align-items:center">
+    <div class="page-header">
       <h1>Gebruikers</h1>
       <router-link to="/users/new"><button class="btn-primary">+ Nieuwe gebruiker</button></router-link>
     </div>
 
-    <div class="card" style="margin-top:12px">
+    <div class="card">
       <table style="width:100%;border-collapse:collapse">
         <thead>
           <tr><th>Naam</th><th>E-mail</th><th>Rol</th><th></th></tr>

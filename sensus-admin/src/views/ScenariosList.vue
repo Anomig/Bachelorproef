@@ -1,18 +1,18 @@
 <template>
   <div class="scenarios-page">
-    <div class="page-header" style="display:flex;justify-content:space-between;align-items:center">
+    <div class="page-header">
       <h1>Scenario's</h1>
       <router-link to="/scenarios/new"><button class="btn-primary">+ Nieuw scenario</button></router-link>
     </div>
 
-    <div class="tabs" style="margin-top:12px;display:flex;gap:18px;align-items:center">
+    <div class="page-subnav tabs">
       <button class="tab active">Alle scenario's</button>
       <button class="tab">Actief (6)</button>
       <button class="tab">Concepten (2)</button>
     </div>
 
-    <div class="card" style="margin-top:16px">
-      <div class="filters" style="display:flex;gap:12px;margin-bottom:12px;align-items:center">
+    <div class="card">
+      <div class="toolbar filters" style="margin-bottom:12px">
         <input v-model="query" placeholder="Zoeken" class="search-input" />
         <select v-model="theme" class="select">
           <option>Alle thema's</option>
@@ -80,8 +80,8 @@ const filtered = computed(()=>{
 .select{padding:10px;border-radius:12px;border:1px solid var(--color-border);background:var(--color-surface)}
 .list-table thead th{font-weight:600;text-align:left;padding:12px;border-bottom:1px solid var(--color-border);color:var(--color-text)}
 .list-table tbody td{padding:12px 0;border-bottom:1px dashed var(--color-border);color:var(--color-text)}
-.tab{background:transparent;border:none;padding:8px 12px;border-radius:8px;color:var(--color-text);cursor:pointer}
-.tab.active{background:var(--purple-100);color:var(--color-text-strong)}
+.tab{background:transparent;border:none;padding:8px 12px;border-radius:0;color:var(--color-text);cursor:pointer}
+.tab.active{background:transparent;color:var(--color-text-strong)}
 .switch{position:relative;display:inline-block;width:44px;height:24px}
 .switch input{opacity:0;width:0;height:0}
 .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccc;border-radius:24px}

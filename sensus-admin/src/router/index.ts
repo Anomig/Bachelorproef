@@ -8,6 +8,7 @@ import ScenarioDetail from '../views/ScenarioDetail.vue'
 import ScenarioCreate from '../views/ScenarioCreate.vue'
 import ScenarioEditor from '../views/ScenarioEditor.vue'
 import ScenarioPreview from '../views/ScenarioPreview.vue'
+import Sessions from '../views/Sessions.vue'
 import UsersList from '../views/UsersList.vue'
 import UserDetail from '../views/UserDetail.vue'
 import Analytics from '../views/Analytics.vue'
@@ -26,6 +27,7 @@ const routes = [
       { path: 'scenarios/:id', component: ScenarioDetail },
       { path: 'scenarios/:id/edit', component: ScenarioEditor },
       { path: 'scenarios/:id/preview', component: ScenarioPreview },
+      { path: 'sessions', component: Sessions },
       { path: 'users', component: UsersList },
       { path: 'users/:id', component: UserDetail },
       { path: 'analytics', component: Analytics },

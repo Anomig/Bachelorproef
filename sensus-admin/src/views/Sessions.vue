@@ -1,12 +1,18 @@
 <template>
   <div>
-    <div style="display:flex;justify-content:space-between;align-items:center">
+    <div class="page-header">
       <h1>Sessies</h1>
       <router-link to="/sessions/new"><button class="btn-primary">+ Nieuwe sessie</button></router-link>
     </div>
 
-    <div class="card" style="margin-top:12px">
-      <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+    <div class="page-subnav tabs">
+      <button class="tab active">Alle sessies</button>
+      <button class="tab">Actief (6)</button>
+      <button class="tab">Voltooid (2)</button>
+    </div>
+
+    <div class="card">
+      <div class="toolbar" style="margin-bottom:12px">
         <input class="search-input" v-model="query" placeholder="Zoeken" />
         <select class="select" v-model="filterScenario"><option>Scenario</option></select>
         <select class="select" v-model="filterStatus"><option>Status</option></select>
@@ -25,7 +31,7 @@
       </DataTable>
     </div>
 
-    <div style="margin-top:18px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+    <div style="margin-top:18px" class="metrics-grid-4">
       <KpiCard label="Sessies deze week" value="128" meta="↑ 12% deze week" />
       <KpiCard label="Voltooid" value="70%" />
       <KpiCard label="Gem. sessieduur" value="11 min" />
