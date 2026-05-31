@@ -1,125 +1,330 @@
 <template>
-  <div class="dashboard">
-    <div class="metrics-grid-4">
-      <div class="kpi soft-card">
-        <div class="label">Sessies deze week</div>
-        <div class="value">128</div>
-        <div class="meta green">↑ 12% deze week</div>
-      </div>
-      <div class="kpi soft-card">
-        <div class="label">Actieve scenario's</div>
-        <div class="value">6</div>
-      </div>
-      <div class="kpi soft-card">
-        <div class="label">Gem. sessieduur</div>
-        <div class="value">11 min</div>
-      </div>
-      <div class="kpi soft-card">
-        <div class="label">Afgeronde sessies</div>
-        <div class="value">82%</div>
-        <div class="meta green">↑ 37% t.o.v. vorige week</div>
-      </div>
+  <div class="dashboard-page">
+    <div class="metrics-grid-4 dashboard-hero-grid">
+      <article class="card metric-card metric-card--wide">
+        <div class="metric-label">Sessies deze week</div>
+        <div class="metric-value">43</div>
+      </article>
+      <article class="card metric-card metric-card--wide">
+        <div class="metric-label">Actieve scenario's</div>
+        <div class="metric-value">3</div>
+      </article>
+      <article class="card metric-card metric-card--wide">
+        <div class="metric-label">Gem. sessieduur</div>
+        <div class="metric-value">0 sec</div>
+      </article>
+      <article class="card metric-card metric-card--wide">
+        <div class="metric-label">Afgeronde sessies</div>
+        <div class="metric-value">100%</div>
+      </article>
     </div>
 
-    <div class="metrics-grid-2" style="margin-top:16px; margin-bottom:20px;">
-      <div class="kpi soft-card">
-        <div class="label">Offline %</div>
-        <div class="value">30%</div>
-      </div>
-      <div class="kpi soft-card">
-        <div class="label">Voltooide sessies</div>
-        <div class="value">70%</div>
-      </div>
+    <div class="metrics-grid-2 dashboard-secondary-grid">
+      <article class="card metric-card metric-card--small">
+        <div class="metric-label">Offline %</div>
+        <div class="metric-value">0%</div>
+      </article>
+      <article class="card metric-card metric-card--small">
+        <div class="metric-label">Voltooide sessies</div>
+        <div class="metric-value">100%</div>
+      </article>
     </div>
 
-    <div class="dashboard-grid">
-      <section class="card">
+    <div class="dashboard-grid dashboard-content-grid">
+      <section class="card dashboard-panel dashboard-panel--sessions">
         <h3 class="panel-title">Recente sessies</h3>
         <div class="table-shell">
-        <table class="recent-table">
-          <thead>
-            <tr><th>Datum</th><th>Scenario</th><th>Status</th><th>Duur</th></tr>
-          </thead>
-          <tbody>
-            <tr v-for="s in sessions" :key="s.id">
-              <td>{{ s.date }}</td>
-              <td class="strong">{{ s.scenario }}</td>
-              <td>
-                <span :class="['status', s.status==='Voltooid' ? 'done' : s.status==='Gestopt' ? 'stopped' : '']">{{ s.status }}</span>
-              </td>
-              <td>{{ s.duration }}</td>
-            </tr>
-          </tbody>
-        </table>
+          <table class="recent-table">
+            <thead>
+              <tr><th>Datum</th><th>Scenario</th><th>Status</th><th>Duur</th></tr>
+            </thead>
+            <tbody>
+              <tr v-for="session in recentSessions" :key="session.id">
+                <td>{{ session.date }}</td>
+                <td class="strong">{{ session.scenario }}</td>
+                <td>
+                  <span class="status status--done">{{ session.status }}</span>
+                </td>
+                <td>{{ session.duration }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div class="all-link">Bekijk alles sessies ›</div>
+        <router-link class="all-link" to="/sessions">Alles bekijken ›</router-link>
       </section>
 
-      <aside class="right-col">
-        <div class="card popular">
+      <aside class="dashboard-side-stack">
+        <section class="card dashboard-panel">
           <h3 class="panel-title">Populaire scenario's</h3>
-          <ul class="popular-list">
-            <li v-for="p in popular" :key="p.title">
-              <div class="row">
-                <div class="title">{{ p.title }}</div>
-                <div class="count">{{ p.count }}</div>
+          <div class="popular-list">
+            <div v-for="item in popularScenarios" :key="item.title" class="popular-item">
+              <div class="popular-item__head">
+                <div class="popular-item__title">{{ item.title }}</div>
+                <div class="popular-item__count">{{ item.count }}</div>
               </div>
-              <div class="bar"><div class="bar-fill" :style="{width: p.percent + '%'}"></div></div>
-            </li>
-          </ul>
-        </div>
+              <div class="popular-bar"><span class="popular-bar__fill" :style="{ width: item.width }"></span></div>
+            </div>
+          </div>
+        </section>
 
-        <div class="card actions" style="margin-top:16px">
+        <section class="card dashboard-panel">
           <h3 class="panel-title">Quick actions</h3>
-          <button class="btn primary">+ Nieuw scenario maken</button>
-          <button class="btn secondary">Scenario beheren</button>
-        </div>
+          <div class="quick-actions">
+            <button class="btn-primary quick-actions__primary" type="button" @click="goToScenarioCreate">+ Nieuw scenario maken</button>
+            <button class="btn-secondary quick-actions__secondary" type="button" @click="goToScenarios">Scenario beheren</button>
+          </div>
+        </section>
       </aside>
+
+      <section class="card dashboard-panel dashboard-panel--insights">
+        <h3 class="panel-title">Belangrijkste inzichten deze week</h3>
+        <div class="insight-list">
+          <article class="insight-item">
+            <div class="insight-icon insight-icon--pink">▢</div>
+            <div>
+              <div class="insight-title">Eigen input gebruikt</div>
+              <div class="insight-copy">0% van de gebruikers gaf een eigen antwoord.</div>
+            </div>
+          </article>
+
+          <article class="insight-item">
+            <div class="insight-icon insight-icon--gold">⌂</div>
+            <div>
+              <div class="insight-title">Populairste scenario</div>
+              <div class="insight-copy">'Situatie op een feestje' werd het vaakst doorlopen.</div>
+            </div>
+          </article>
+        </div>
+        <div class="insight-footer">Laatst bijgewerkt: 31/05/2026, 17:20</div>
+      </section>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-const sessions = ref([
-  { id: 1, date: '17 dec 2025', scenario: 'Feest', status: 'Voltooid', duration: '12 min' },
-  { id: 2, date: '17 dec 2025', scenario: 'Relatie', status: 'Gestopt', duration: '5 min' },
-  { id: 3, date: '22 dec 2025', scenario: 'Online', status: 'Voltooid', duration: '11 min' },
-  { id: 4, date: '7 jan 2025', scenario: 'Groepsdruk', status: 'Voltooid', duration: '13 min' }
-])
+const router = useRouter()
 
-const popular = ref([
-  { title: 'Feest', count: 62, percent: 95 },
-  { title: 'Relatie', count: 54, percent: 85 },
-  { title: 'Online', count: 48, percent: 72 },
-  { title: 'Groepsdruk', count: 35, percent: 55 },
-  { title: 'Date', count: 20, percent: 32 }
-])
+const recentSessions = [
+  { id: 'f146d041', date: '31/05/2026, 16:53', scenario: 'Situatie op een feestje', status: 'Voltooid', duration: '0 sec' },
+  { id: '8cefc044', date: '31/05/2026, 14:43', scenario: 'Online gesprek loopt vast', status: 'Voltooid', duration: '0 sec' },
+  { id: 'd2290cb9', date: '31/05/2026, 14:39', scenario: 'Het is maar een grap', status: 'Voltooid', duration: '0 sec' },
+  { id: '7d46fd64', date: '31/05/2026, 08:44', scenario: 'Het is maar een grap', status: 'Voltooid', duration: '0 sec' }
+]
+
+const popularScenarios = [
+  { title: 'Situatie op een feestje', count: 17, width: '86%' },
+  { title: 'Het is maar een grap', count: 13, width: '68%' },
+  { title: 'Online gesprek loopt vast', count: 13, width: '68%' },
+  { title: 'Het is maar een grap kopie', count: 0, width: '2%' }
+]
+
+function goToScenarioCreate() {
+  router.push('/scenarios/new')
+}
+
+function goToScenarios() {
+  router.push('/scenarios')
+}
 </script>
 
 <style scoped>
-.dashboard{padding-top:2px}
-.kpi{padding:18px;text-align:left;box-shadow:0 6px 18px rgba(2,40,55,0.06);border:1px solid rgba(2,40,55,0.05)}
-.kpi .label{color:var(--color-text);font-size:14px;margin-bottom:6px}
-.kpi .value{font-size:clamp(1.8rem, 2vw, 2.1rem);color:var(--color-text-strong);font-weight:var(--fw-semibold);letter-spacing:-0.03em}
-.kpi .meta{font-size:12px;color:var(--color-text);margin-top:8px}
-.green{color:#2ea24e}
-.card{padding:18px}
-.recent-table{margin-top:8px}
-.recent-table .strong{color:var(--color-text-strong);font-weight:var(--fw-semibold)}
-.all-link{margin-top:12px;color:var(--color-primary);font-weight:600}
-.popular-list{list-style:none;padding:0;margin:0}
-.popular-list li{padding:10px 0;border-bottom:1px dashed var(--color-border)}
-.popular-list .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.bar{height:10px;background:#f0f0f0;border-radius:8px;overflow:hidden}
-.bar-fill{height:100%;background:#123b46}
-.actions .btn{display:block;width:100%;padding:12px 14px;border-radius:12px;border:none;margin-bottom:10px}
-.btn.primary{background:#8b0f7a;color:#fff}
-.btn.secondary{background:#0c5460;color:#fff}
-.status{padding:4px 8px;border-radius:12px;font-size:13px}
-.status.done{color:#1b7a3a}
-.status.stopped{color:#c83b3b}
+.dashboard-page {
+  display: grid;
+  gap: 16px;
+}
+
+.dashboard-hero-grid {
+  align-items: stretch;
+}
+
+.metric-card {
+  padding: 16px 18px 18px;
+}
+
+.metric-label {
+  font-size: 0.95rem;
+  color: var(--color-text, #454147);
+  margin-bottom: 8px;
+}
+
+.metric-value {
+  font-size: clamp(2rem, 2.25vw, 2.8rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: #0f4f66;
+}
+
+.dashboard-secondary-grid {
+  margin-top: 2px;
+}
+
+.dashboard-panel {
+  padding: 18px 18px 16px;
+}
+
+.dashboard-side-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.dashboard-panel--sessions {
+  min-height: 320px;
+}
+
+.recent-table {
+  margin-top: 4px;
+}
+
+.recent-table .strong {
+  color: var(--color-text-strong, #1e1e1e);
+  font-weight: 600;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  color: #2ea24e;
+}
+
+.status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #2ea24e;
+}
+
+.all-link {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 12px;
+  color: var(--color-text, #454147);
+  font-weight: 500;
+}
+
+.popular-list {
+  display: grid;
+  gap: 14px;
+}
+
+.popular-item {
+  display: grid;
+  gap: 8px;
+}
+
+.popular-item__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.popular-item__title {
+  color: var(--color-text-strong, #1e1e1e);
+}
+
+.popular-item__count {
+  color: var(--color-text, #454147);
+}
+
+.popular-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: #e9e5e2;
+  overflow: hidden;
+}
+
+.popular-bar__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #11485f;
+}
+
+.quick-actions {
+  display: grid;
+  gap: 12px;
+}
+
+.quick-actions__primary,
+.quick-actions__secondary {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+}
+
+.quick-actions__primary {
+  background: linear-gradient(90deg, var(--purple-600), var(--purple-500));
+  color: white;
+}
+
+.quick-actions__secondary {
+  background: #0d5462;
+  color: white;
+}
+
+.insight-list {
+  display: grid;
+  gap: 18px;
+  margin-top: 4px;
+  border-top: 1px solid rgba(2, 40, 55, 0.08);
+  padding-top: 12px;
+}
+
+.insight-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.insight-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 0.95rem;
+  flex: 0 0 auto;
+}
+
+.insight-icon--pink {
+  background: rgba(176, 16, 130, 0.12);
+  color: #b01082;
+}
+
+.insight-icon--gold {
+  background: rgba(220, 177, 44, 0.16);
+  color: #c69c0c;
+}
+
+.insight-title {
+  font-weight: 700;
+  color: var(--color-text-strong, #1e1e1e);
+}
+
+.insight-copy {
+  color: var(--color-text, #454147);
+  margin-top: 2px;
+}
+
+.insight-footer {
+  margin-top: 10px;
+  color: var(--color-text, #454147);
+  font-size: 0.88rem;
+}
+
+@media (max-width: 1023px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 @media (max-width: 900px){
   .kpis{grid-template-columns:1fr}
