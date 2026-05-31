@@ -418,11 +418,64 @@ function cancel() {
   .scenario-preview-card {
     min-height: auto;
   }
+
+  .scenario-create-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
 }
 
 @media (max-width: 720px) {
+  .scenario-create-header {
+    flex-direction: column;
+  }
+
+  .scenario-create-actions,
+  .scenario-create-subactions {
+    justify-content: stretch;
+  }
+
+  .scenario-create-actions > *,
+  .scenario-create-subactions > * {
+    width: 100%;
+  }
+
+  .scenario-create-templates,
+  .scenario-create-tabs {
+    width: 100%;
+  }
+
+  .template-pill,
+  .scenario-create-button,
+  .scenario-create-question-button {
+    width: 100%;
+  }
+
   .scenario-form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .scenario-preview-card {
+    padding: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .scenario-create-page {
+    gap: 12px;
+  }
+
+  .scenario-create-grid {
+    gap: 12px;
+  }
+
+  .scenario-preview__options {
+    gap: 6px;
+  }
+
+  .scenario-preview__option {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>

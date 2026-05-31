@@ -264,6 +264,57 @@ const filterStatus = ref('Datum')
   font-weight: 600;
 }
 
+@media (max-width: 960px) {
+  .sessions-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sessions-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .scenario-performance-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 720px) {
+  .sessions-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-field--wide,
+  .select,
+  .create-link,
+  .create-button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .sessions-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .sessions-table-shell table,
+  .performance-table-shell table {
+    min-width: 720px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sessions-card,
+  .scenario-performance-card {
+    padding: 10px;
+  }
+
+  .metric-card--session {
+    min-height: 80px;
+  }
+}
+
 .status-pill {
   display: inline-flex;
   align-items: center;

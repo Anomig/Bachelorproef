@@ -1,19 +1,21 @@
 <template>
   <div class="app-shell">
-    <aside class="sidebar">
+    <div v-if="isSidebarOpen" class="sidebar-backdrop" @click="closeSidebar"></div>
+
+    <aside class="sidebar" :class="{ 'sidebar--open': isSidebarOpen }">
       <div class="brand">
         <img :src="logoUrl" alt="Sensus" class="brand-logo" />
       </div>
 
       <nav class="sidebar-nav">
-        <router-link v-for="item in navItems" :key="item.to" :to="item.to" class="nav-item">
+        <router-link v-for="item in navItems" :key="item.to" :to="item.to" class="nav-item" @click="closeSidebar">
           <img :src="item.icon" :alt="item.label" class="nav-icon" />
           <span>{{ item.label }}</span>
         </router-link>
       </nav>
 
       <div class="sidebar-footer">
-        <router-link to="/login" class="nav-item nav-item--logout">
+        <router-link to="/login" class="nav-item nav-item--logout" @click="closeSidebar">
           <img :src="logoutIcon" alt="Uitloggen" class="nav-icon" />
           <span>Uitloggen</span>
         </router-link>
@@ -23,6 +25,12 @@
     <div class="workspace">
       <header class="workspace-header">
         <div class="workspace-header__left">
+          <button class="sidebar-toggle" type="button" :aria-expanded="isSidebarOpen" aria-label="Menu" @click="toggleSidebar">
+            <span class="sidebar-toggle__line"></span>
+            <span class="sidebar-toggle__line"></span>
+            <span class="sidebar-toggle__line"></span>
+          </button>
+
           <label class="topbar-search" aria-label="Zoeken">
             <span class="search-icon">⌕</span>
             <input type="search" placeholder="Zoeken" />
@@ -123,8 +131,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import logoUrl from '../assets/Favicon.png'
 import bellIcon from '../assets/icons/fi-rr-bell.png'
 import helpIcon from '../assets/icons/fi-rr-interrogation.png'
@@ -137,9 +145,11 @@ import logoutIcon from '../assets/icons/fi-rr-time-delete.png'
 import notificationService from '../services/notificationService'
 
 const router = useRouter()
+const route = useRoute()
 
 const isNotificationsOpen = ref(false)
 const isHelpOpen = ref(false)
+const isSidebarOpen = ref(false)
 const notifications = ref<{ id: string; title: string; timestamp: string }[]>([])
 const helpSections = reactive({
   about: false,
@@ -150,6 +160,31 @@ const notificationCount = computed(() => notifications.value.length)
 
 onMounted(async () => {
   notifications.value = await notificationService.listNotifications()
+})
+
+watch(
+  () => route.fullPath,
+  () => {
+    closeSidebar()
+  }
+)
+
+watch(isSidebarOpen, (open) => {
+  document.body.style.overflow = open ? 'hidden' : ''
+})
+
+function handleKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    closePanels()
+    closeSidebar()
+  }
+}
+
+window.addEventListener('keydown', handleKeydown)
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
+  document.body.style.overflow = ''
 })
 
 const navItems = [
@@ -165,10 +200,22 @@ function closePanels() {
   isHelpOpen.value = false
 }
 
+function closeSidebar() {
+  isSidebarOpen.value = false
+}
+
+function toggleSidebar() {
+  isSidebarOpen.value = !isSidebarOpen.value
+  if (isSidebarOpen.value) {
+    closePanels()
+  }
+}
+
 function toggleNotifications() {
   isNotificationsOpen.value = !isNotificationsOpen.value
   if (isNotificationsOpen.value) {
     isHelpOpen.value = false
+    closeSidebar()
   }
 }
 
@@ -176,6 +223,7 @@ function toggleHelp() {
   isHelpOpen.value = !isHelpOpen.value
   if (isHelpOpen.value) {
     isNotificationsOpen.value = false
+    closeSidebar()
   }
 }
 
@@ -205,6 +253,7 @@ function contactSupport() {
 
 function goToAnalytics() {
   closePanels()
+  closeSidebar()
   router.push('/analytics')
 }
 </script>
@@ -215,6 +264,10 @@ function goToAnalytics() {
   grid-template-columns: 176px minmax(0, 1fr);
   min-height: 100vh;
   background: var(--color-background, #f7f4f2);
+}
+
+.sidebar-backdrop {
+  display: none;
 }
 
 .sidebar {
@@ -304,8 +357,35 @@ function goToAnalytics() {
 }
 
 .workspace-header__left {
-  display: grid;
+  display: flex;
+  align-items: center;
   gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+.sidebar-toggle {
+  display: none;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(2, 40, 55, 0.12);
+  border-radius: 14px;
+  background: var(--color-surface, #fff);
+  box-shadow: 0 6px 16px rgba(2, 40, 55, 0.05);
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.sidebar-toggle__line {
+  width: 16px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--color-text-strong, #1e1e1e);
+  display: block;
 }
 
 .topbar-search {
@@ -654,7 +734,25 @@ function goToAnalytics() {
   }
 
   .sidebar {
-    display: none;
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(84vw, 300px);
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    box-shadow: 16px 0 40px rgba(2, 40, 55, 0.18);
+  }
+
+  .sidebar--open {
+    transform: translateX(0);
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 40, 55, 0.34);
+    z-index: 40;
   }
 
   .workspace {
@@ -662,11 +760,36 @@ function goToAnalytics() {
   }
 
   .workspace-header {
-    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .workspace-header__left {
+    gap: 10px;
+  }
+
+  .sidebar-toggle {
+    display: inline-flex;
+    flex: 0 0 auto;
+  }
+
+  .topbar-search {
+    min-width: 0;
+    width: 100%;
   }
 
   .topbar-actions {
-    align-self: flex-end;
+    align-self: center;
+    gap: 10px;
+  }
+
+  .profile-chip {
+    padding-left: 0;
+  }
+
+  .profile-avatar {
+    width: 38px;
+    height: 38px;
   }
 }
 </style>

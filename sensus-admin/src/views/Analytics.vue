@@ -241,5 +241,54 @@ onMounted(() => {
   display: grid;
   gap: 16px;
 }
+
+@media (max-width: 960px) {
+  .analytics-page__metrics,
+  .analytics-page__mini-grid,
+  .analytics-page__charts {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .analytics-col--reflection {
+    width: 38%;
+  }
+}
+
+@media (max-width: 720px) {
+  .analytics-page__toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .analytics-page__select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .analytics-page__metrics,
+  .analytics-page__mini-grid,
+  .analytics-page__charts {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-page__table-shell table {
+    min-width: 620px;
+  }
+}
+
+@media (max-width: 480px) {
+  .analytics-page__table-shell th,
+  .analytics-page__table-shell td {
+    padding: 12px 10px;
+  }
+
+  .analytics-col--user,
+  .analytics-col--date,
+  .analytics-col--age,
+  .analytics-col--gender,
+  .analytics-col--reflection {
+    width: auto;
+  }
+}
 </style>
 
