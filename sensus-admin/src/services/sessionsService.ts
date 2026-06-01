@@ -1,4 +1,4 @@
-import { hasSupabaseConfig } from './supabaseClient'
+import { hasSupabaseConfig, getSupabase } from './supabaseClient'
 
 type SessionRecord = {
   id: string
@@ -31,17 +31,44 @@ function mockMetrics() {
 
 export default {
   async listSessions() {
-    // Future Supabase connection point: fetch from your sessions table here.
-    if (hasSupabaseConfig()) {
-      // prepared for later; return mocks until schema + package are finalized
-      // example shape is kept stable for future mapping
+    if (!hasSupabaseConfig()) return mockSessions
+
+    try {
+      const supabase = getSupabase()
+      const { data, error } = await supabase
+        .from('sessions')
+        .select('id,name,scenario,date,start,end,status')
+        .order('date', { ascending: false })
+        .limit(200)
+
+      if (error) {
+        console.warn('Supabase fetch error', error)
+        return mockSessions
+      }
+      return (data || []).map((r: any) => ({
+        id: r.id,
+        name: r.name,
+        scenario: r.scenario,
+        date: r.date,
+        start: r.start,
+        end: r.end,
+        status: r.status
+      }))
+    } catch (e) {
+      console.warn('Sessions fetch failed', e)
       return mockSessions
     }
-    return mockSessions
   },
 
   async getMetrics() {
-    // Future Supabase connection point: aggregate from sessions table.
-    return mockMetrics()
+    if (!hasSupabaseConfig()) return mockMetrics()
+    try {
+      const supabase = getSupabase()
+      const { count } = await supabase.from('sessions').select('*', { count: 'exact', head: false }) as any
+      return { total: Number(count) || 0, completed: 0, averageDuration: '—', dropout: 0, offline: 0, thisWeek: 0 }
+    } catch (e) {
+      console.warn('Metrics fetch failed', e)
+      return mockMetrics()
+    }
   }
 }

@@ -14,8 +14,14 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue'
-defineProps({ columns: { type: Array, default: ()=>[] } })
+type Column = {
+  key: string
+  label: string
+}
+
+withDefaults(defineProps<{ columns?: Column[] }>(), {
+  columns: () => []
+})
 </script>
 
 <style scoped>

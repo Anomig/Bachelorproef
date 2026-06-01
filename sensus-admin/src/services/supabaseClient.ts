@@ -1,18 +1,31 @@
-// Keep only env access here so the admin app can be prepared without the Supabase package installed yet.
-// When you're ready to connect, install `@supabase/supabase-js` and swap this helper to a real client.
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
+
+let supabase: SupabaseClient | null = null
 
 export type SupabaseEnvConfig = {
   url: string
   anonKey: string
 }
 
-export function getSupabaseEnv(): SupabaseEnvConfig | null {
+export function initSupabase(): SupabaseClient | null {
   const url = import.meta.env.VITE_SUPABASE_URL
   const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
-  if (!url || !anonKey) return null
-  return { url, anonKey }
+  if (!url || !anonKey) {
+    console.warn('Supabase env not provided')
+    return null
+  }
+  supabase = createClient(url, anonKey)
+  return supabase
+}
+
+export function getSupabase(): SupabaseClient {
+  if (!supabase) {
+    const client = initSupabase()
+    if (!client) throw new Error('Supabase not initialized')
+  }
+  return supabase!
 }
 
 export function hasSupabaseConfig(): boolean {
-  return Boolean(getSupabaseEnv())
+  return Boolean(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY)
 }

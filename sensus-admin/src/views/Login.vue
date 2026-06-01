@@ -24,16 +24,20 @@ import { useRouter } from 'vue-router'
 import AppButton from '../components/AppButton.vue'
 import FormField from '../components/FormField.vue'
 import logoUrl from '../assets/logoDonker.svg'
+import { signIn } from '../services/authService'
 
 const router = useRouter()
 const email = ref('')
 const password = ref('')
 
-function login() {
-  // lightweight mock login to allow local navigation during development
-  localStorage.setItem('sensus_user', email.value || 'admin')
-  localStorage.setItem('sensus_auth_mode', 'login')
-  router.push('/')
+async function login() {
+  try {
+    await signIn(email.value, password.value)
+    router.push('/')
+  } catch (e:any) {
+    console.error('Login failed', e)
+    alert(e.message || 'Login failed')
+  }
 }
 </script>
 

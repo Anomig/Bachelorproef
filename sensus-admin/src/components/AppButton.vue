@@ -5,7 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps } from 'vue'
+import { computed } from 'vue'
+
 const props = defineProps({ label: String, variant: { type: String, default: 'primary' } })
-const variantClass = computed(()=> props.variant === 'primary' ? 'btn-primary' : 'btn-ghost')
+const variantClass = computed(() => (props.variant === 'primary' ? 'btn-primary' : 'btn-ghost'))
 </script>

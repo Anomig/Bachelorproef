@@ -168,10 +168,10 @@ const activeStepLabel = computed(() => {
   return 'Einde A'
 })
 const stepTabs = computed(() => [
-  { key: 'intro', label: 'Intro' },
-  { key: 'step1', label: 'Stap 1' },
-  { key: 'reflection', label: 'Reflectie A' },
-  { key: 'end', label: 'Einde A' }
+  { key: 'intro' as const, label: 'Intro' },
+  { key: 'step1' as const, label: 'Stap 1' },
+  { key: 'reflection' as const, label: 'Reflectie A' },
+  { key: 'end' as const, label: 'Einde A' }
 ])
 
 function selectTemplate(templateId: string) {

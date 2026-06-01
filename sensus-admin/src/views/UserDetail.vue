@@ -17,7 +17,7 @@ import AppButton from '../components/AppButton.vue'
 
 const route = useRoute()
 const id = route.params.id
-const user = ref({ id: '', name: 'Niet gevonden', email: '', role: '' })
+const user = ref<any>({ id: '', name: 'Niet gevonden', email: '', role: '' })
 
 onMounted(()=>{
   const found = users.find((u:any)=>String(u.id) === String(id))

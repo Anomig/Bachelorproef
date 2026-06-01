@@ -27,17 +27,21 @@ import { useRouter } from 'vue-router'
 import AppButton from '../components/AppButton.vue'
 import FormField from '../components/FormField.vue'
 import logoUrl from '../assets/logoDonker.svg'
+import { signUp } from '../services/authService'
 
 const router = useRouter()
 const name = ref('')
 const email = ref('')
 const password = ref('')
 
-function signup() {
-  localStorage.setItem('sensus_signup_name', name.value || 'Nieuwe gebruiker')
-  localStorage.setItem('sensus_signup_email', email.value || '')
-  localStorage.setItem('sensus_auth_mode', 'signup')
-  router.push('/login')
+async function signup() {
+  try {
+    await signUp(email.value, password.value, name.value)
+    router.push('/login')
+  } catch (e: any) {
+    console.error('Signup failed', e)
+    alert(e.message || 'Account aanmaken mislukt')
+  }
 }
 </script>
 

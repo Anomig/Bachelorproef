@@ -55,7 +55,7 @@ import scenarios from '../mock/mockScenarios.ts'
 
 const route = useRoute()
 const id = route.params.id
-const scenario = ref({ id: '', title: 'Laden...', description: '' })
+const scenario = ref<any>({ id: '', title: 'Laden...', description: '' })
 
 onMounted(() => {
   const found = scenarios.find((s: any) => String(s.id) === String(id))

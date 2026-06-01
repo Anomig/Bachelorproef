@@ -15,7 +15,7 @@
       </nav>
 
       <div class="sidebar-footer">
-        <router-link to="/login" class="nav-item nav-item--logout" @click="closeSidebar">
+        <router-link to="/login" class="nav-item nav-item--logout" @click.prevent="handleLogout">
           <img :src="logoutIcon" alt="Uitloggen" class="nav-icon" />
           <span>Uitloggen</span>
         </router-link>
@@ -47,7 +47,11 @@
           </button>
 
           <div class="profile-chip">
-            <div class="profile-avatar">PD</div>
+            <div class="profile-avatar">{{ userInitials }}</div>
+            <div class="profile-meta">
+              <div class="profile-name">{{ userLabel }}</div>
+              <div class="profile-role">Admin</div>
+            </div>
             <div class="profile-meta">
               <div class="profile-name">Philip Davids</div>
               <div class="profile-role">Admin</div>
@@ -143,6 +147,7 @@ import chartIcon from '../assets/icons/fi-rr-chart-histogram.png'
 import settingsIcon from '../assets/icons/fi-rr-settings.png'
 import logoutIcon from '../assets/icons/fi-rr-time-delete.png'
 import notificationService from '../services/notificationService'
+import { getUser, signOut } from '../services/authService'
 
 const router = useRouter()
 const route = useRoute()
@@ -151,15 +156,26 @@ const isNotificationsOpen = ref(false)
 const isHelpOpen = ref(false)
 const isSidebarOpen = ref(false)
 const notifications = ref<{ id: string; title: string; timestamp: string }[]>([])
+const userLabel = ref('Admin')
 const helpSections = reactive({
   about: false,
   dashboard: false
 })
 
 const notificationCount = computed(() => notifications.value.length)
+const userInitials = computed(() => {
+  const parts = userLabel.value.split(' ').filter(Boolean)
+  if (!parts.length) return 'A'
+  return parts
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || '')
+    .join('')
+})
 
 onMounted(async () => {
   notifications.value = await notificationService.listNotifications()
+  const user = await getUser().catch(() => null)
+  userLabel.value = user?.user_metadata?.name || user?.email || 'Admin'
 })
 
 watch(
@@ -255,6 +271,13 @@ function goToAnalytics() {
   closePanels()
   closeSidebar()
   router.push('/analytics')
+}
+
+async function handleLogout() {
+  closePanels()
+  closeSidebar()
+  await signOut().catch((error) => console.warn('Logout failed', error))
+  await router.push('/login')
 }
 </script>
 

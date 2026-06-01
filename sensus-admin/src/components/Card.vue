@@ -5,9 +5,10 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, computed } from 'vue'
+import { computed } from 'vue'
+
 const props = defineProps({ size: { type: String, default: 'md' } })
-const sizeClass = computed(()=> props.size === 'sm' ? 'card--small' : props.size === 'lg' ? 'card--large' : '')
+const sizeClass = computed(() => (props.size === 'sm' ? 'card--small' : props.size === 'lg' ? 'card--large' : ''))
 </script>
 
 <style scoped>

@@ -11,6 +11,9 @@ import './assets/styles/global.css'
 import './assets/styles/components.css'
 import './assets/styles/pages.css'
 import './assets/styles/typography.css'
+import { initSupabase } from './services/supabaseClient'
+
+initSupabase()
 
 const app = createApp(App)
 app.use(createPinia())

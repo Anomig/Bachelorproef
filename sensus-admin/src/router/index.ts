@@ -13,6 +13,8 @@ import UsersList from '../views/UsersList.vue'
 import UserDetail from '../views/UserDetail.vue'
 import Analytics from '../views/Analytics.vue'
 import Settings from '../views/Settings.vue'
+import { getSession } from '../services/authService'
+import { hasSupabaseConfig } from '../services/supabaseClient'
 
 const routes = [
   { path: '/login', component: Login },
@@ -39,6 +41,26 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+router.beforeEach(async (to) => {
+  const publicRoutes = ['/login', '/signup']
+
+  if (!hasSupabaseConfig()) {
+    return true
+  }
+
+  const session = await getSession().catch(() => null)
+
+  if (session && publicRoutes.includes(to.path)) {
+    return '/'
+  }
+
+  if (!session && !publicRoutes.includes(to.path)) {
+    return '/login'
+  }
+
+  return true
 })
 
 export default router

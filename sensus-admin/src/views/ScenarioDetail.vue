@@ -62,7 +62,7 @@ import mockService from '../services/mockService'
 const route = useRoute()
 const id = route.params.id
 
-const scenario = ref({
+const scenario = ref<any>({
   id: '',
   title: 'Niet gevonden',
   description: 'Dit scenario is nog niet beschikbaar.',

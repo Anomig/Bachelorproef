@@ -3,9 +3,10 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, computed } from 'vue'
+import { computed } from 'vue'
+
 const props = defineProps({ label: String, status: { type: String, default: 'info' } })
-const statusClass = computed(()=> `status-${props.status}`)
+const statusClass = computed(() => `status-${props.status}`)
 </script>
 
 <style scoped>
