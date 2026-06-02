@@ -2,7 +2,10 @@
 import type { Core } from '@strapi/strapi';
 
 const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Middlewares => {
-  const allowedOrigins = [env('FRONTEND_URL', 'http://localhost:5173'), env('FRONTEND_PREVIEW_URL', ''), env('FRONTEND_ADMIN_URL', 'https://bachelorproef-admin.vercel.app')].filter(
+  const allowedOrigins = [
+  'http://localhost:5173',
+  'https://bachelorproef-admin.vercel.app'
+].filter(
     (value): value is string => Boolean(value)
   );
 
@@ -12,11 +15,12 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Middlewar
     'strapi::security',
     {
       name: 'strapi::cors',
-      config: {
-        origin: allowedOrigins,
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-        headers: '*',
-      },
+  config: {
+    origin: allowedOrigins,
+    headers: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    credentials: true,
+  },
     },
     'strapi::poweredBy',
     'strapi::query',
