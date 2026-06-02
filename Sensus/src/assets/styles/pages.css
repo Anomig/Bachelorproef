@@ -660,12 +660,14 @@
 
 .end-list {
   margin: 0;
-  padding-left: 1.1rem;
+  padding-left: 1.5rem;
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-8);
   color: var(--color-text);
   font-size: var(--fs-base);
   line-height: 1.45;
+  list-style: disc;
+  list-style-position: outside;
 }
 
 .end-actions {
@@ -695,7 +697,22 @@
   width: min(375px, 100%);
   margin: 0 auto;
   display: grid;
+  gap: var(--space-32);
+}
+
+.profile-content {
+  display: grid;
   gap: var(--space-24);
+}
+
+.profile-header {
+  display: grid;
+  gap: var(--space-16);
+}
+
+.profile-field {
+  display: grid;
+  gap: var(--space-12);
 }
 
 .profile-back {
@@ -769,7 +786,7 @@
   font-size: var(--fs-xs);
   font-weight: var(--fw-medium);
   color: var(--color-text);
-  margin-top: calc(var(--space-4) * -1);
+  margin-top: 0;
 }
 
 .profile-consent {

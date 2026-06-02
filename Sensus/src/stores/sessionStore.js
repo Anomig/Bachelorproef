@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { createScenarioEngine } from '../engine/scenarioEngine'
 import { mockScenarios } from '../data/mockScenarios'
 import { fetchScenarios } from '../services/strapi'
+import { useUiStore } from './uiStore'
 
 const REFLECTION_DEFAULTS = {
   impact: '',
@@ -102,6 +103,9 @@ export const useSessionStore = defineStore('session', {
     },
 
     async loadAvailableScenarios() {
+      const uiStore = useUiStore()
+      uiStore.beginLoading()
+
       try {
         const items = await fetchScenarios()
         if (items && items.length) {
@@ -125,6 +129,8 @@ export const useSessionStore = defineStore('session', {
       } catch (e) {
         // fallthrough to mocks on error
         console.error('loadAvailableScenarios error', e)
+      } finally {
+        uiStore.endLoading()
       }
 
       this.availableScenarios = mockScenarios
@@ -185,6 +191,9 @@ export const useSessionStore = defineStore('session', {
     },
 
     async saveReflection(payload) {
+      const uiStore = useUiStore()
+      uiStore.beginLoading()
+
       this.reflection = {
         impact: payload?.impact || '',
         lesson: payload?.lesson || '',
@@ -206,6 +215,8 @@ export const useSessionStore = defineStore('session', {
       } catch (e) {
         console.error('persist reflection failed or could not import supabaseService', e)
         return false
+      } finally {
+        uiStore.endLoading()
       }
     },
 
