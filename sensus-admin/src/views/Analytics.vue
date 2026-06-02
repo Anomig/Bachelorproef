@@ -67,19 +67,29 @@
           </colgroup>
           <thead>
             <tr>
+              <th>Session</th>
+              <th>Scenario</th>
               <th>Gebruiker/id</th>
               <th>Datum</th>
               <th>Leeftijd</th>
               <th>Gender</th>
+              <th>Impact</th>
+              <th>Lesson</th>
+              <th>Next time</th>
               <th>Reflectie</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="r in reflections" :key="r.userId">
+              <td>{{ r.sessionId || '—' }}</td>
+              <td>{{ r.scenarioId || '—' }}</td>
               <td>{{ r.userId }}</td>
               <td>{{ r.date }}</td>
               <td>{{ r.age }}</td>
               <td>{{ r.gender }}</td>
+              <td>{{ r.impact }}</td>
+              <td>{{ r.lesson }}</td>
+              <td>{{ r.nextTime }}</td>
               <td>{{ r.reflection }}</td>
             </tr>
           </tbody>

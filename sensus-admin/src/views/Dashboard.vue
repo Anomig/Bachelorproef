@@ -3,30 +3,30 @@
     <div class="metrics-grid-4 dashboard-hero-grid">
       <article class="card metric-card metric-card--wide">
         <div class="metric-label">Sessies deze week</div>
-        <div class="metric-value">43</div>
+        <div class="metric-value">{{ metrics.thisWeek }}</div>
       </article>
       <article class="card metric-card metric-card--wide">
         <div class="metric-label">Actieve scenario's</div>
-        <div class="metric-value">3</div>
+        <div class="metric-value">{{ activeScenarioCount }}</div>
       </article>
       <article class="card metric-card metric-card--wide">
         <div class="metric-label">Gem. sessieduur</div>
-        <div class="metric-value">0 sec</div>
+        <div class="metric-value">{{ metrics.averageDuration }}</div>
       </article>
       <article class="card metric-card metric-card--wide">
         <div class="metric-label">Afgeronde sessies</div>
-        <div class="metric-value">100%</div>
+        <div class="metric-value">{{ metrics.completed }}%</div>
       </article>
     </div>
 
     <div class="metrics-grid-2 dashboard-secondary-grid">
       <article class="card metric-card metric-card--small">
         <div class="metric-label">Offline %</div>
-        <div class="metric-value">0%</div>
+        <div class="metric-value">{{ metrics.offline }}%</div>
       </article>
       <article class="card metric-card metric-card--small">
         <div class="metric-label">Voltooide sessies</div>
-        <div class="metric-value">100%</div>
+        <div class="metric-value">{{ metrics.completed }}%</div>
       </article>
     </div>
 
@@ -46,6 +46,9 @@
                   <span class="status status--done">{{ session.status }}</span>
                 </td>
                 <td>{{ session.duration }}</td>
+              </tr>
+              <tr v-if="!recentSessions.length">
+                <td colspan="4">Nog geen sessies gevonden in Supabase.</td>
               </tr>
             </tbody>
           </table>
@@ -102,23 +105,47 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import sessionsService from '../services/sessionsService'
+import analyticsService from '../services/analyticsService'
+import scenariosService from '../services/scenariosService'
 
 const router = useRouter()
 
-const recentSessions = [
-  { id: 'f146d041', date: '31/05/2026, 16:53', scenario: 'Situatie op een feestje', status: 'Voltooid', duration: '0 sec' },
-  { id: '8cefc044', date: '31/05/2026, 14:43', scenario: 'Online gesprek loopt vast', status: 'Voltooid', duration: '0 sec' },
-  { id: 'd2290cb9', date: '31/05/2026, 14:39', scenario: 'Het is maar een grap', status: 'Voltooid', duration: '0 sec' },
-  { id: '7d46fd64', date: '31/05/2026, 08:44', scenario: 'Het is maar een grap', status: 'Voltooid', duration: '0 sec' }
-]
+const recentSessions = ref<any[]>([])
+const metrics = ref({ total: 0, completed: 0, averageDuration: '—', dropout: 0, offline: 0, thisWeek: 0 })
+const activeScenarioCount = ref(0)
 
-const popularScenarios = [
-  { title: 'Situatie op een feestje', count: 17, width: '86%' },
-  { title: 'Het is maar een grap', count: 13, width: '68%' },
-  { title: 'Online gesprek loopt vast', count: 13, width: '68%' },
-  { title: 'Het is maar een grap kopie', count: 0, width: '2%' }
-]
+const popularScenarios = computed(() => {
+  const counts = recentSessions.value.reduce<Record<string, number>>((accumulator, session) => {
+    accumulator[session.scenario] = (accumulator[session.scenario] || 0) + 1
+    return accumulator
+  }, {})
+
+  return Object.entries(counts)
+    .map(([title, count]) => ({ title, count, width: `${Math.min(100, count * 18)}%` }))
+    .sort((left, right) => right.count - left.count)
+})
+
+onMounted(async () => {
+  const [sessions, snapshot, scenarios] = await Promise.all([
+    sessionsService.listSessions(),
+    analyticsService.getSnapshot('week'),
+    scenariosService.listScenarios()
+  ])
+
+  recentSessions.value = sessions.slice(0, 4).map((session: any) => ({
+    id: session.id,
+    date: session.date,
+    scenario: session.scenario,
+    status: session.status,
+    duration: session.duration_seconds ? `${Math.round(session.duration_seconds / 60)} min` : '—'
+  }))
+
+  metrics.value = snapshot
+  activeScenarioCount.value = (scenarios || []).filter((scenario: any) => scenario.status === 'published').length
+})
 
 function goToScenarioCreate() {
   router.push('/scenarios/new')

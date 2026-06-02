@@ -18,24 +18,24 @@
     <div class="metrics-grid-5 sessions-metrics">
       <article class="card metric-card metric-card--session">
         <div class="metric-label">Sessies deze week</div>
-        <div class="metric-value metric-value--accent">43</div>
+        <div class="metric-value metric-value--accent">{{ metrics.thisWeek }}</div>
         <div class="metric-meta">Op basis van live data</div>
       </article>
       <article class="card metric-card metric-card--session">
         <div class="metric-label">Voltooid</div>
-        <div class="metric-value metric-value--accent">100%</div>
+        <div class="metric-value metric-value--accent">{{ metrics.completed }}%</div>
       </article>
       <article class="card metric-card metric-card--session">
         <div class="metric-label">Gem. sessie duur</div>
-        <div class="metric-value metric-value--accent">0 sec</div>
+        <div class="metric-value metric-value--accent">{{ metrics.averageDuration }}</div>
       </article>
       <article class="card metric-card metric-card--session">
         <div class="metric-label">Afhaak %</div>
-        <div class="metric-value metric-value--accent">0%</div>
+        <div class="metric-value metric-value--accent">{{ metrics.dropout }}%</div>
       </article>
       <article class="card metric-card metric-card--session">
         <div class="metric-label">Offline %</div>
-        <div class="metric-value metric-value--accent">0%</div>
+        <div class="metric-value metric-value--accent">{{ metrics.offline }}%</div>
       </article>
     </div>
 
@@ -62,6 +62,7 @@
             <tr>
               <th style="width:40px"><input type="checkbox" /></th>
               <th>Naam/id</th>
+              <th>Gebruiker</th>
               <th>Scenario</th>
               <th>Datum</th>
               <th>Start</th>
@@ -74,11 +75,12 @@
             <tr v-for="session in sessions" :key="session.id">
               <td><input type="checkbox" /></td>
               <td class="session-id">{{ session.id }}</td>
+              <td>{{ session.userId || 'Geen user_id' }}</td>
               <td>{{ session.scenario }}</td>
               <td>{{ session.date }}</td>
               <td>{{ session.start }}</td>
               <td>{{ session.end }}</td>
-              <td><span class="status-pill">Voltooid</span></td>
+              <td><span class="status-pill">{{ session.status }}</span></td>
               <td class="ellipsis">⋯</td>
             </tr>
           </tbody>
@@ -127,26 +129,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import sessionsService from '../services/sessionsService'
 
-const sessions = [
-  { id: 'f146d041', scenario: 'Situatie op een feestje', date: '31/05/2026, 16:53', start: '31/05/2026, 16:53', end: '31/05/2026, 16:54' },
-  { id: '8cefc044', scenario: 'Online gesprek loopt vast', date: '31/05/2026, 14:43', start: '31/05/2026, 14:43', end: '31/05/2026, 14:44' },
-  { id: 'd2290cb9', scenario: 'Het is maar een grap', date: '31/05/2026, 14:39', start: '31/05/2026, 14:39', end: '31/05/2026, 14:40' },
-  { id: '7d46fd64', scenario: 'Het is maar een grap', date: '31/05/2026, 08:44', start: '31/05/2026, 08:44', end: '31/05/2026, 08:45' },
-  { id: '0cab32d0', scenario: 'Online gesprek loopt vast', date: '30/05/2026, 16:30', start: '30/05/2026, 16:30', end: '30/05/2026, 16:31' },
-  { id: '4770d90', scenario: 'Het is maar een grap', date: '30/05/2026, 16:30', start: '30/05/2026, 16:30', end: '30/05/2026, 16:30' },
-  { id: '82adfa74', scenario: 'Situatie op een feestje', date: '30/05/2026, 16:29', start: '30/05/2026, 16:29', end: '30/05/2026, 16:29' },
-  { id: 'd6349fe4', scenario: 'Online gesprek loopt vast', date: '30/05/2026, 16:28', start: '30/05/2026, 16:28', end: '30/05/2026, 16:29' },
-  { id: 'b07c6d40', scenario: 'Het is maar een grap', date: '30/05/2026, 16:28', start: '30/05/2026, 16:28', end: '30/05/2026, 16:28' },
-  { id: '71490729', scenario: 'Situatie op een feestje', date: '30/05/2026, 16:27', start: '30/05/2026, 16:27', end: '30/05/2026, 16:27' }
-]
+const sessions = ref<any[]>([])
+const metrics = ref({ total: 0, completed: 0, averageDuration: '—', dropout: 0, offline: 0, thisWeek: 0 })
 
-const performanceRows = [
-  { title: 'Situatie op een feestje', sessions: 17 },
-  { title: 'Online gesprek loopt vast', sessions: 13 },
-  { title: 'Het is maar een grap', sessions: 13 }
-]
+const performanceRows = computed(() => {
+  const counts = sessions.value.reduce<Record<string, number>>((accumulator, session) => {
+    accumulator[session.scenario] = (accumulator[session.scenario] || 0) + 1
+    return accumulator
+  }, {})
+
+  return Object.entries(counts)
+    .map(([title, count]) => ({ title, sessions: count }))
+    .sort((left, right) => right.sessions - left.sessions)
+})
+
+onMounted(async () => {
+  sessions.value = await sessionsService.listSessions()
+  metrics.value = await sessionsService.getMetrics()
+})
 
 const query = ref('')
 const filterScenario = ref('Alle scenario\'s')

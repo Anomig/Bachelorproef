@@ -28,6 +28,24 @@ export async function signUp(email: string, password: string, name?: string) {
     }
   })
   if (error) throw error
+
+  const userId = data.user?.id
+  if (userId) {
+    const profilePayload = {
+      user_id: userId,
+      display_name: name || data.user?.email || 'Admin',
+      role: 'admin'
+    }
+
+    const profileError = await sb.from('profiles').upsert(profilePayload, {
+      onConflict: 'user_id'
+    }).then(({ error: upsertError }) => upsertError).catch(() => null)
+
+    if (profileError) {
+      console.warn('Profile sync failed', profileError)
+    }
+  }
+
   return data
 }
 

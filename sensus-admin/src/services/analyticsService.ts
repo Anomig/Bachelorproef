@@ -1,4 +1,4 @@
-import { hasSupabaseConfig } from './supabaseClient'
+import { hasSupabaseConfig, getSupabase } from './supabaseClient'
 
 type AnalyticsSnapshot = {
   sessions: number
@@ -17,29 +17,106 @@ type ReflectionRecord = {
   reflection: string
 }
 
-const mockSnapshots: Record<string, AnalyticsSnapshot> = {
-  all: { sessions: 689, completed: 70, averageDuration: '11 min', dropout: 32, offline: 30, thisWeek: 128 },
-  week: { sessions: 128, completed: 95.7, averageDuration: '4 min', dropout: -50, offline: 13, thisWeek: 23 },
-  today: { sessions: 23, completed: 95.7, averageDuration: '4 min', dropout: -50, offline: 13, thisWeek: 23 }
+type SupabaseReflectionRow = {
+  id: string
+  session_id: string | null
+  scenario_id: string | null
+  impact: string | null
+  lesson: string | null
+  next_time: string | null
+  created_at: string | null
+  age: number | null
+  gender: string | null
 }
-
-const mockReflections: ReflectionRecord[] = [
-  { userId: 'r85n5Te8gG', date: '17 dec 2025', age: 17, gender: 'V', reflection: 'Ik vind het soms lastig om signalen van een ander te herkennen.' },
-  { userId: 'Ye8Pr5f92Ne', date: '17 dec 2025', age: 17, gender: 'M', reflection: 'Ik ben heel open, en merk dat mensen daardoor soms foute aannemen hebben.' },
-  { userId: 'je8e4b9He4F', date: '18 dec 2025', age: 15, gender: 'V', reflection: 'Als meisje is het makkelijker om met iemand te sturen. De meeste jongens vinden alles wel oké.' }
-]
 
 export default {
   async getSnapshot(scope: 'all' | 'week' | 'today' = 'all') {
-    // Future Supabase connection point: aggregate from your sessions + reflection tables.
-    if (hasSupabaseConfig()) {
-      return mockSnapshots[scope]
+    if (!hasSupabaseConfig()) {
+      return {
+        sessions: 0,
+        completed: 0,
+        averageDuration: '—',
+        dropout: 0,
+        offline: 0,
+        thisWeek: 0
+      }
     }
-    return mockSnapshots[scope]
+
+    try {
+      const supabase = getSupabase()
+      const { data: sessions, error: sessionError } = await supabase
+        .from('sessions')
+        .select('id,status,duration_seconds,completed_at')
+
+      if (sessionError) {
+        console.warn('Analytics session fetch failed', sessionError)
+        return {
+          sessions: 0,
+          completed: 0,
+          averageDuration: '—',
+          dropout: 0,
+          offline: 0,
+          thisWeek: 0
+        }
+      }
+
+      const rows = sessions || []
+      const completed = rows.filter(row => row.status === 'done').length
+      const totalDuration = rows.reduce((sum, row) => sum + Number(row.duration_seconds || 0), 0)
+      const averageDurationSeconds = rows.length ? totalDuration / rows.length : 0
+
+      return {
+        sessions: rows.length,
+        completed,
+        averageDuration: averageDurationSeconds ? `${Math.round(averageDurationSeconds / 60)} min` : '—',
+        dropout: rows.filter(row => row.status === 'stopped').length,
+        offline: 0,
+        thisWeek: rows.length
+      }
+    } catch (e) {
+      console.warn('Analytics snapshot failed', e)
+      return {
+        sessions: 0,
+        completed: 0,
+        averageDuration: '—',
+        dropout: 0,
+        offline: 0,
+        thisWeek: 0
+      }
+    }
   },
 
   async listReflections() {
-    // Future Supabase connection point: read reflection records from Supabase.
-    return mockReflections
+    if (!hasSupabaseConfig()) return []
+
+    try {
+      const supabase = getSupabase()
+      const { data, error } = await supabase
+        .from('reflections')
+        .select('id,session_id,scenario_id,impact,lesson,next_time,created_at,age,gender')
+        .order('created_at', { ascending: false })
+        .limit(200)
+
+      if (error) {
+        console.warn('Reflection fetch failed', error)
+        return []
+      }
+
+      return (data || []).map((row: SupabaseReflectionRow) => ({
+        userId: row.session_id || row.id,
+        date: row.created_at ? new Date(row.created_at).toLocaleDateString('nl-NL') : '',
+        age: Number(row.age || 0),
+        gender: row.gender || '',
+        reflection: [row.impact, row.lesson, row.next_time].filter(Boolean).join(' | '),
+        sessionId: row.session_id || '',
+        scenarioId: row.scenario_id || '',
+        impact: row.impact || '',
+        lesson: row.lesson || '',
+        nextTime: row.next_time || ''
+      }))
+    } catch (e) {
+      console.warn('Reflection list failed', e)
+      return []
+    }
   }
 }
