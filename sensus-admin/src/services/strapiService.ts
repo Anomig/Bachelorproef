@@ -84,39 +84,42 @@ async function request(path:string, options:RequestInit={}){
 
 export default {
   async listScenarios(){
-    try{
-      const data = await request('/api/scenarios?populate=*')
-      return data.data.map((d:any)=>toScenarioRecord({
+  try{
+    const data = await request('/api/scenarios?populate=*')
+
+    return data.data.map((d: any) =>
+      toScenarioRecord({
         id: d.id,
-        ...(d.attributes || {})
-      }))
-    }catch(e){
-      console.warn('Strapi listScenarios error', e)
-      return null
-    }
-  },
+        ...d
+      })
+    )
+
+  }catch(e){
+    console.warn('Strapi listScenarios error', e)
+    return null
+  }
+},
   async getScenario(id:number|string){
     try{
       const data = await request(`/api/scenarios/${id}?populate=*`)
       return toScenarioRecord({
         id: data.data.id,
-        ...(data.data.attributes || {})
+        ...data.data
       })
     }catch(e){
       console.warn('Strapi getScenario error', e)
       return null
     }
   },
-  async createScenario(payload: ScenarioPayload, publish = false){
+  async createScenario(payload: ScenarioPayload){
     try{
       const body = {
         data: {
-          title: payload.title || '',
-          theme: payload.theme || '',
-          description: payload.description || '',
-          is_active: true,
+          title: payload.title,
+          theme: payload.theme,
+          description: payload.description,
           engine_json: buildEngineJson(payload),
-          ...(publish ? { publishedAt: new Date().toISOString() } : {})
+          is_active: true
         }
       }
       const data = await request('/api/scenarios', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) })
