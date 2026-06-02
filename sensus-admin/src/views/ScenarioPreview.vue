@@ -51,14 +51,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import scenarios from '../mock/mockScenarios.ts'
+import scenariosService from '../services/scenariosService'
 
 const route = useRoute()
 const id = route.params.id
 const scenario = ref<any>({ id: '', title: 'Laden...', description: '' })
 
-onMounted(() => {
-  const found = scenarios.find((s: any) => String(s.id) === String(id))
+onMounted(async () => {
+  const found = await scenariosService.findScenario(id as any)
   if (found) {
     scenario.value = found
   }

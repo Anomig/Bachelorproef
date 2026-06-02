@@ -57,7 +57,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import mockService from '../services/mockService'
+import scenariosService from '../services/scenariosService'
 
 const route = useRoute()
 const id = route.params.id
@@ -69,8 +69,8 @@ const scenario = ref<any>({
   status: 'unknown'
 })
 
-function loadScenario() {
-  const found = mockService.findScenario(id as any)
+async function loadScenario() {
+  const found = await scenariosService.findScenario(id as any)
   if (found) {
     scenario.value = { ...found }
   }
@@ -78,9 +78,14 @@ function loadScenario() {
 
 onMounted(loadScenario)
 
-function togglePublish() {
-  mockService.togglePublish(id as any)
-  loadScenario()
+async function togglePublish() {
+  const nextPublishState = scenario.value.status !== 'published'
+  await scenariosService.updateScenario(id as any, {
+    title: scenario.value.title,
+    description: scenario.value.description,
+    theme: scenario.value.theme || ''
+  }, nextPublishState)
+  await loadScenario()
 }
 </script>
 

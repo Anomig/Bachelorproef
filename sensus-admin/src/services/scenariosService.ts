@@ -20,8 +20,8 @@ async function createScenario(payload:any){
   return mockService.createScenario(payload)
 }
 
-async function updateScenario(id:any,payload:any){
-  const updated = await strapi.updateScenario(id, payload).catch(()=>null)
+async function updateScenario(id:any,payload:any, publish?: boolean){
+  const updated = await strapi.updateScenario(id, payload, publish).catch(()=>null)
   if(updated) return updated
   return mockService.updateScenario(id, payload)
 }

@@ -194,12 +194,11 @@ async function create(publish = false) {
     buttonText: buttonText.value,
     note: note.value,
     questionCount: questionCount.value,
-    status: publish ? 'published' : 'draft',
     flow: currentTemplate.value.flow,
     templateId: currentTemplate.value.id
   }
 
-  const scenario = await scenariosService.createScenario(payload)
+  const scenario = await scenariosService.createScenario(payload, publish)
   if (scenario && scenario.id) {
     router.push(`/scenarios/${scenario.id}`)
   }
