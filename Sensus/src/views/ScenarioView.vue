@@ -121,8 +121,11 @@ function markVisitedStep(stepId) {
 }
 
 watch(currentStepId, (stepId) => {
+    console.log('➡️ currentStepId changed:', stepId)
+  console.log('📍 currentStep object:', currentStep.value)
   markVisitedStep(stepId)
   const activeSessionId = getSessionId()
+    console.log('🔐 session id:', activeSessionId)
   if (activeSessionId && stepId) {
     markStepStart(activeSessionId, stepId)
   }
@@ -160,40 +163,41 @@ function showScenarioError() {
 }
 
 onMounted(async () => {
+  console.log('🚀 ScenarioView mounted')
+  console.log('Route id:', documentId.value)
+
   try {
     const s = await getScenarioBySlug(documentId.value)
 
+    console.log('📦 RAW STRAPI RESPONSE:', s)
+    console.log('🧠 ENGINE JSON:', s?.engine_json)
+    console.log('🔑 START NODE:', s?.engine_json?.start)
+    console.log('📊 STEPS TYPE:', typeof s?.engine_json?.steps)
+    console.log('📊 STEPS:', s?.engine_json?.steps)
+
     const normalized = normalizeScenario(s?.engine_json)
 
-        console.log('START STEP:', normalized?.start)
-    console.log('AVAILABLE STEPS:', normalized?.steps?.map(s => s.id))
-    console.log('URL STEP:', route.query?.step)
-
-    if (!normalized) throw new Error('Invalid scenario')
+    console.log('✅ NORMALIZED SCENARIO:', normalized)
+    console.log('📌 FIRST STEP:', normalized?.steps?.[0])
+    console.log('📌 TOTAL STEPS:', normalized?.steps?.length)
 
     scenario.value = normalized
-
-    /**
-     * 🔥 FIX: force start step into URL if missing
-     */
-    const startStepId = normalized.start || normalized.steps?.[0]?.id
-
-    if (startStepId && !route.query?.step) {
-      router.replace({
-        name: 'scenario',
-        params: { id: scenarioId.value },
-        query: { step: startStepId }
-      })
-    }
-
   } catch (err) {
-    console.error(err)
+    console.error('❌ ERROR loading scenario:', err)
     scenario.value = null
     isLoading.value = false
     showScenarioError()
     return
   }
 
+  if (!scenario.value) {
+    console.error('❌ No scenario after load')
+    isLoading.value = false
+    showScenarioError()
+    return
+  }
+
+  console.log('🎬 SCENARIO READY')
   isLoading.value = false
   await startSession()
 })
@@ -214,6 +218,8 @@ function goBack() {
 }
 
 async function navigateToStep(stepId) {
+    console.log('🧭 navigateToStep called:', stepId)
+  console.log('📦 available steps:', scenario.value?.steps?.map(s => s.id))
   if (stepId === 'node_fallback') {
     router.push({
       name: 'scenario',
