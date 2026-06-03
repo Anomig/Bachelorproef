@@ -82,7 +82,8 @@ const status = ref('Alle statussen')
 const scenariosList = ref<any[]>([])
 
 onMounted(async () => {
-  scenariosList.value = await scenariosService.listScenarios()
+  const result = await scenariosService.listScenarios()
+  scenariosList.value = result || []
 })
 
 const filtered = computed(()=>{

@@ -88,7 +88,7 @@ export default {
     return data.data.map((d: any) =>
       toScenarioRecord({
         id: d.id,
-        ...d
+        ...(d.attributes || {}) 
       })
     )
 

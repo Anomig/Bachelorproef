@@ -136,11 +136,10 @@ export const useSessionStore = defineStore('session', {
         console.log('RAW STRAPI ITEMS:', items)
 
         if (items?.length) {
-          const valid = items.filter(i =>
-  isValidScenarioDefinition(i?.scenario)
-)
-
-console.log('VALID AFTER FILTER:', valid)
+          const valid = items.filter(i => {
+  console.log('TEST ITEM:', i.scenario)
+  return true
+})
 
 this.availableScenarios = valid.length
   ? valid.map(i => ({
@@ -148,10 +147,7 @@ this.availableScenarios = valid.length
       title: i.title,
       shortDescription: i.shortDescription,
       theme: i.theme,
-      scenario:
-        i.engine_json?.data?.attributes?.engine_json ||
-        i.engine_json ||
-        i.scenario
+      scenario: i.scenario || i.engine_json
     }))
   : mockScenarios
 

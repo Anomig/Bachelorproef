@@ -33,7 +33,7 @@ const routes = [
       { path: 'users', component: UsersList },
       { path: 'users/:id', component: UserDetail },
       { path: 'analytics', component: Analytics },
-      { path: 'settings', component: Settings }
+      { path: 'settings', component: Settings },
     ]
   }
 ]

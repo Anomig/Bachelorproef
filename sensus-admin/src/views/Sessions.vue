@@ -10,7 +10,7 @@
         </div>
       </div>
 
-      <router-link to="/sessions/new" class="create-link">
+      <router-link to="/sessions/" class="create-link">
         <button class="btn-primary create-button">+ Nieuwe sessie</button>
       </router-link>
     </div>
