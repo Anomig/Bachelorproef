@@ -325,7 +325,7 @@ async function goNext() {
         </BaseButton>
 
         <p class="home__text" style="margin-top: 24px;">
-          Demo code: 2IB25
+          Demo code: 12345
         </p>
 
       </footer>
