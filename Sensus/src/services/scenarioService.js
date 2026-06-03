@@ -38,7 +38,7 @@ function mapScenario(item) {
   return {
     id: item?.id,
     title: data.title ?? '',
-    slug: data.slug ?? '',
+    slug: data.documentId,
     description: data.description ?? '',
     theme: data.theme ?? '',
     duration: data.duration ?? null,
