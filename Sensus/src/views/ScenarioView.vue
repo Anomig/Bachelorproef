@@ -16,7 +16,7 @@ const { analyzeResponse } = useScenarioAI()
 const { ensureSession, getSessionId, completeCurrentSession } = useAnalyticsSession()
 
 const scenarioId = computed(() => String(route.params.id ?? ''))
-const slug = route.params.id
+const documentId = computed(() => String(route.params.id ?? ''))
 const queryStep = computed(() => route.query?.step)
 const paramStep = computed(() => route.params?.step)
 
@@ -144,7 +144,7 @@ function showScenarioError() {
 
 onMounted(async () => {
   try {
-    const s = await getScenarioBySlug(slug)
+    const s = await getScenarioBySlug(documentId.value)
     console.debug('getScenarioBySlug result:', s)
     console.debug('engine_json:', s?.engine_json)
     console.debug('engine_json.steps count:', s?.engine_json?.steps?.length)
