@@ -1,11 +1,10 @@
 // Strapi service-laag: haalt scenario's op via REST en mapt responses naar frontend-vorm.
-const RAW_BASE = 'http://localhost:1337'
+const RAW_BASE = import.meta?.env?.VITE_STRAPI_URL || ''
+if (!RAW_BASE) {
+  throw new Error('VITE_STRAPI_URL is missing')
+}
 const BASE = RAW_BASE.replace(/\/$/, '')
 const HAS_STRAPI = Boolean(BASE)
-
-console.log('ENV DEBUG:', import.meta.env)
-console.log('STRAPI URL:', import.meta.env.VITE_STRAPI_URL)
-console.log('MODE:', import.meta.env.MODE)
 
 async function safeJson(res) {
   try {
