@@ -42,7 +42,7 @@ export const useAuthStore = defineStore('auth', {
 
       this.session = session
       this.user = session?.user ?? null
-      this.isAuthenticated = !!session
+      this.isAuthenticated = !!session?.user
 
       if (this.user) {
         await this.fetchProfile()

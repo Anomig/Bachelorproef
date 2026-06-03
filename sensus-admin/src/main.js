@@ -20,6 +20,18 @@ const authStore = useAuthStore(pinia)
 await authStore.fetchUser()
 authStore.setupAuthListener()
 
+// wacht tot auth echt stabiel is
+await new Promise((resolve) => {
+  const check = () => {
+    if (authStore.isAuthenticated !== undefined) {
+      resolve()
+    } else {
+      setTimeout(check, 50)
+    }
+  }
+  check()
+})
+
 app.use(router)
 
 app.mount('#app')
