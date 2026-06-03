@@ -208,7 +208,9 @@ async function navigateToStep(stepId) {
     return
   }
 
-  if (!stepId) stepId = 'step-1'
+if (!stepId) {
+  stepId = scenario.value?.start
+}
 
   let nextStep = scenario.value?.steps.find(s => s.id === stepId)
 
