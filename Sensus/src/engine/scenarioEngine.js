@@ -1,6 +1,11 @@
 // Kleine state-machine: navigeert door scenario-stappen op basis van keuzes of `next`.
 export function createScenarioEngine(scenario) {
+  console.log('ENGINE INPUT:', scenario)
 
+  if (!scenario || !scenario.start || !scenario.steps) {
+    console.error('Invalid scenario passed to engine', scenario)
+    return null
+  }
   let currentStepId = scenario.start
 
   function getStep() {

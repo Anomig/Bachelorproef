@@ -75,8 +75,6 @@ async function request(path:string, options:RequestInit={}){
   if(!STRAPI_URL) throw new Error('VITE_STRAPI_URL not set')
   const url = STRAPI_URL.replace(/\/$/, '') + path
   const headers: Record<string,string> = { ...(options.headers as Record<string,string> || {}) }
-  const token = import.meta.env.VITE_STRAPI_TOKEN
-  if(token) headers['Authorization'] = `Bearer ${token}`
   const res = await fetch(url, { ...options, headers })
   if(!res.ok) throw new Error(`Strapi request failed: ${res.status}`)
   return res.json()
@@ -101,7 +99,7 @@ export default {
 },
   async getScenario(id:number|string){
     try{
-      const data = await request(`/api/scenarios/${id}?populate=*`)
+      const data = await request(`/api/scenarios?filters[documentId][$eq]=${id}&populate=*`)
       return toScenarioRecord({
         id: data.data.id,
         ...data.data

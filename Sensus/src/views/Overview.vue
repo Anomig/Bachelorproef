@@ -10,6 +10,9 @@ const store = useSessionStore()
 const loadingScenarioId = ref(null)
 
 onMounted(() => {
+  console.log('STORE CHECK', store)
+  console.log('JOINED:', store.joined)
+  console.log('SCENARIO LIST:', store.availableScenarios)
   if (!store.joined) {
     router.replace('/join')
     return
@@ -25,20 +28,11 @@ onMounted(() => {
   }
 })
 
-function openScenario(id) {
-  loadingScenarioId.value = id
+async function openScenario(id) {
+  store.selectScenario(id)
 
-  const selected = store.selectScenario(id)
-  if (!selected) {
-    loadingScenarioId.value = null
-    return
-  }
-
-  const started = store.startSelectedScenario()
-  if (!started) {
-    loadingScenarioId.value = null
-    return
-  }
+  const ok = await store.startSelectedScenario()
+  console.log('STARTED:', ok)
 
   router.push('/scenario')
 }

@@ -1,8 +1,14 @@
-// Hoofdstore van de app: bewaart sessie, scenario-flow state en reflectiegegevens.
+// Hoofdstore van de app: sessie + scenario flow + reflectie
 import { defineStore } from 'pinia'
+import {useStorage} from '@vueuse/core'
 import { createScenarioEngine } from '../engine/scenarioEngine'
 import { mockScenarios } from '../data/mockScenarios'
 import { fetchScenarios } from '../services/strapi'
+import { createSession, updateSession } from '../services/sessionService'
+import { saveReflection } from '../services/supabaseService'
+
+// 🔥 NIEUW: event tracking service (Supabase)
+import { createEvent } from '../services/sessionService'
 
 const REFLECTION_DEFAULTS = {
   impact: '',
@@ -15,6 +21,7 @@ const PARTICIPANT_INFO_DEFAULTS = {
   gender: ''
 }
 
+/* ================= VALIDATION ================= */
 function isValidScenarioDefinition(value) {
   if (!value || typeof value !== 'object') return false
   if (typeof value.start !== 'string' || !value.start) return false
@@ -22,55 +29,65 @@ function isValidScenarioDefinition(value) {
   return Boolean(value.steps[value.start])
 }
 
+/* ================= SESSION ID ================= */
 function createSessionId() {
-  const id = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`
-  return `session-${id}`
+  return (
+    globalThis.crypto?.randomUUID?.() ||
+    `${Date.now()}-${Math.random().toString(36).slice(2)}`
+  )
 }
 
+/* ================= STORE ================= */
 export const useSessionStore = defineStore('session', {
   state: () => ({
     sessionId: null,
     enteredCode: '',
-    joined: false,
+    joined: useStorage('joined', false),
     joinError: '',
+
     participantInfo: { ...PARTICIPANT_INFO_DEFAULTS },
     participantInfoCompleted: false,
+
     availableScenarios: [],
-    selectedScenarioId: null,
+    selectedScenarioId: useStorage('selectedScenarioId', null),
+    sessionId: useStorage('sessionId', null),
+
     engine: null,
     currentStep: null,
     lastEndStep: null,
+
     reflection: { ...REFLECTION_DEFAULTS },
     freeChoiceInputs: []
   }),
 
+/* ================= GETTERS ================= */
   getters: {
     selectedScenario(state) {
-      return (
-        state.availableScenarios.find(scenario => scenario.id === state.selectedScenarioId) || null
-      )
+      return state.availableScenarios.find(
+        s => s.id === state.selectedScenarioId
+      ) || null
     }
   },
 
+/* ================= ACTIONS ================= */
   actions: {
-    joinWithCode(code) {
+
+    /* ================= JOIN ================= */
+    async joinWithCode(code) {
       const normalized = String(code || '').trim()
 
       if (!normalized) {
         this.joinError = 'Vul een code in.'
-        this.joined = false
         return false
       }
 
       if (!/^\d{4}$/.test(normalized)) {
-        this.joinError = 'Voer een 4-cijferige code in. Bijv. 1234'
-        this.joined = false
+        this.joinError = 'Voer een 4-cijferige code in.'
         return false
       }
 
       if (normalized !== '1234') {
-        this.joinError = 'Ongeldige code. Probeer 1234 voor de demo.'
-        this.joined = false
+        this.joinError = 'Ongeldige code.'
         return false
       }
 
@@ -78,94 +95,128 @@ export const useSessionStore = defineStore('session', {
       this.enteredCode = normalized
       this.joined = true
       this.joinError = ''
-      this.participantInfo = { ...PARTICIPANT_INFO_DEFAULTS }
-      this.participantInfoCompleted = false
-      // fire-and-forget: load scenarios from Strapi if configured
+
+      // 🔥 SESSION START
+      try {
+        await createSession({
+          sessionId: this.sessionId,
+          start: new Date().toISOString(),
+          status: 'active'
+        })
+
+        await createEvent({
+          sessionId: this.sessionId,
+          eventType: 'session_started'
+        })
+      } catch (e) {
+        console.error('session start failed', e)
+      }
+
       this.loadAvailableScenarios()
       return true
     },
 
+    /* ================= PARTICIPANT INFO ================= */
     saveParticipantInfo(payload) {
       const age = String(payload?.age || '').trim()
       const gender = String(payload?.gender || '').trim()
 
-      if (!age || !gender) {
-        return false
-      }
+      if (!age || !gender) return false
 
-      this.participantInfo = {
-        age,
-        gender
-      }
+      this.participantInfo = { age, gender }
       this.participantInfoCompleted = true
+
       return true
     },
 
+    /* ================= SCENARIOS ================= */
     async loadAvailableScenarios() {
       try {
         const items = await fetchScenarios()
-        if (items && items.length) {
-          const validItems = items.filter(it => isValidScenarioDefinition(it?.scenario))
+        console.log('RAW STRAPI ITEMS:', items)
 
-          if (!validItems.length) {
-            console.warn('No valid scenario engine_json found in Strapi, fallback to mocks')
-            this.availableScenarios = mockScenarios
-            return
-          }
+        if (items?.length) {
+          const valid = items.filter(i =>
+  isValidScenarioDefinition(i?.scenario)
+)
 
-          this.availableScenarios = validItems.map(it => ({
-            id: it.id,
-            title: it.title,
-            shortDescription: it.shortDescription,
-            theme: it.theme,
-            scenario: it.scenario
-          }))
+console.log('VALID AFTER FILTER:', valid)
+
+this.availableScenarios = valid.length
+  ? valid.map(i => ({
+      id: i.id,
+      title: i.title,
+      shortDescription: i.shortDescription,
+      theme: i.theme,
+      scenario:
+        i.engine_json?.data?.attributes?.engine_json ||
+        i.engine_json ||
+        i.scenario
+    }))
+  : mockScenarios
+
           return
         }
       } catch (e) {
-        // fallthrough to mocks on error
-        console.error('loadAvailableScenarios error', e)
+        console.error(e)
       }
 
       this.availableScenarios = mockScenarios
     },
 
-    selectScenario(scenarioId) {
-      const exists = this.availableScenarios.some(scenario => scenario.id === scenarioId)
-      if (!exists) return false
+    selectScenario(id) {
+  console.log('SELECTING:', id)
 
-      this.selectedScenarioId = scenarioId
-      return true
-    },
+  this.selectedScenarioId = id
 
-    startSelectedScenario() {
-      const selected = this.selectedScenario
-      if (!selected) return false
-      if (!isValidScenarioDefinition(selected.scenario)) {
-        console.error('Invalid scenario definition for selected scenario', selected.id)
-        return false
-      }
+  console.log('STATE AFTER SELECT:', {
+    selectedScenarioId: this.selectedScenarioId,
+    available: this.availableScenarios
+  })
 
-      this.engine = createScenarioEngine(selected.scenario)
-      this.currentStep = this.engine.getStep()
-      if (!this.currentStep) {
-        console.error('Scenario engine could not resolve first step', selected.id)
-        this.engine = null
-        return false
-      }
-      this.lastEndStep = null
-      this.reflection = { ...REFLECTION_DEFAULTS }
-      return true
-    },
+  return true
+},
 
+    /* ================= START SCENARIO ================= */
+async startSelectedScenario() {
+  const selected = this.selectedScenario
+
+  console.log('SELECTED OBJECT:', selected)
+  console.log('SCENARIO INSIDE:', selected?.scenario)
+
+  if (!selected?.scenario) {
+    console.error('NO SCENARIO FOUND')
+    return false
+  }
+
+  const engine = createScenarioEngine(selected.scenario)
+
+  if (!engine) {
+    console.error('ENGINE FAILED TO INITIALIZE')
+    return false
+  }
+
+  this.engine = engine
+  this.currentStep = engine.getStep()
+
+  console.log('ENGINE OK:', this.engine)
+  console.log('FIRST STEP:', this.currentStep)
+
+  return true
+},
+
+    /* ================= FLOW ================= */
     next(choiceKey) {
       if (!this.engine) return null
 
-      const nextStep = this.engine.next(choiceKey) || null
+      const nextStep = this.engine.next(choiceKey)
       this.currentStep = nextStep
+
+      this.logEvent('choice_made', { choiceKey, step: nextStep })
 
       if (nextStep?.type === 'end') {
         this.lastEndStep = nextStep
+        this.logEvent('scenario_completed')
       }
 
       return nextStep
@@ -174,16 +225,32 @@ export const useSessionStore = defineStore('session', {
     goNext() {
       if (!this.engine) return null
 
-      const nextStep = this.engine.goNext() || null
+      const nextStep = this.engine.goNext()
       this.currentStep = nextStep
 
-      if (nextStep?.type === 'end') {
-        this.lastEndStep = nextStep
-      }
+      this.logEvent('step_continue', { step: nextStep })
 
       return nextStep
     },
 
+    /* ================= EVENTS (CENTRAL) ================= */
+    async logEvent(eventType, payload = {}) {
+      try {
+        if (!this.sessionId) return
+
+        await createEvent({
+          sessionId: this.sessionId,
+          scenarioId: this.selectedScenarioId,
+          eventType,
+          payload,
+          createdAt: new Date().toISOString()
+        })
+      } catch (e) {
+        console.error('event log failed', e)
+      }
+    },
+
+    /* ================= REFLECTION ================= */
     async saveReflection(payload) {
       this.reflection = {
         impact: payload?.impact || '',
@@ -191,25 +258,25 @@ export const useSessionStore = defineStore('session', {
         nextTime: payload?.nextTime || ''
       }
 
-      const sessionId = this.sessionId
-      const scenarioId = this.selectedScenarioId
-
-      if (!sessionId || !scenarioId) {
-        console.error('persist reflection skipped: missing sessionId or scenarioId')
-        return false
-      }
+      if (!this.sessionId || !this.selectedScenarioId) return false
 
       try {
-        const { saveReflection } = await import('../services/supabaseService')
-        await saveReflection({ sessionId, scenarioId, reflection: this.reflection })
+        await saveReflection({
+          sessionId: this.sessionId,
+          scenarioId: this.selectedScenarioId,
+          reflection: this.reflection
+        })
+
+        await this.logEvent('reflection_saved')
+
         return true
       } catch (e) {
-        console.error('persist reflection failed or could not import supabaseService', e)
+        console.error(e)
         return false
       }
     },
 
-    backToOverview() {
+        backToOverview() {
       this.engine = null
       this.currentStep = null
       this.lastEndStep = null
@@ -217,22 +284,34 @@ export const useSessionStore = defineStore('session', {
       this.freeChoiceInputs = []
     },
 
-    leaveSession() {
+    /* ================= END SESSION ================= */
+    async leaveSession() {
+      try {
+        if (this.sessionId) {
+          await updateSession({
+            sessionId: this.sessionId,
+            end: new Date().toISOString(),
+            status: 'completed'
+          })
+
+          await this.logEvent('session_ended')
+        }
+      } catch (e) {
+        console.error(e)
+      }
+
       this.sessionId = null
       this.enteredCode = ''
       this.joined = false
-      this.joinError = ''
-      this.participantInfo = { ...PARTICIPANT_INFO_DEFAULTS }
-      this.participantInfoCompleted = false
       this.availableScenarios = []
       this.selectedScenarioId = null
       this.engine = null
       this.currentStep = null
       this.lastEndStep = null
-      this.reflection = { ...REFLECTION_DEFAULTS }
       this.freeChoiceInputs = []
     },
-    
+
+    /* ================= FREE INPUT ================= */
     recordFreeChoiceInput(payload) {
       this.freeChoiceInputs.push({
         optionKey: payload?.optionKey || '',
@@ -241,6 +320,8 @@ export const useSessionStore = defineStore('session', {
         title: payload?.title || '',
         createdAt: new Date().toISOString()
       })
-    },
+
+      this.logEvent('free_input', payload)
+    }
   }
 })
