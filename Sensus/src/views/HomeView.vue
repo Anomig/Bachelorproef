@@ -30,73 +30,114 @@ const isStartDisabled = computed(() => !isCodeComplete.value || isValidating.val
 async function validateAccessCode(inputCode) {
   const accessCode = inputCode.trim().toUpperCase()
 
-  console.log('URL:', import.meta.env.VITE_SUPABASE_URL)
-  console.log('[AccessCode] Samengestelde code:', accessCode)
-
-  if (!accessCode) {
-    console.warn('[AccessCode] Code is leeg na trim/toUpperCase')
-    return { isValid: false, message: 'De code is ongeldig of niet meer actief.' }
+  if (accessCode.length !== 5) {
+    return { isValid: false, message: 'Ongeldige code' }
   }
-
-  const { data: allData } = await supabase
-    .from('access_codes')
-    .select('*')
-
-  console.log('Alle codes in DB:', allData)
 
   const { data, error } = await supabase
     .from('access_codes')
-    .select('*')
+    .select('id, code, is_active, expires_at, used_count, max_uses')
     .eq('code', accessCode)
-    .maybeSingle()
+    .limit(1)
+    .single()
 
-  console.log('[AccessCode] data:', data)
-  console.log('[AccessCode] error:', error)
+  console.log({ data, error })
 
-  if (error) {
-    console.error('[AccessCode] Supabase error:', error)
+  if (error || !data) {
     return { isValid: false, message: 'De code is ongeldig of niet meer actief.' }
   }
-
-  if (!data) {
-    console.warn('[AccessCode] Geen data gevonden voor code:', accessCode)
-    return { isValid: false, message: 'De code is ongeldig of niet meer actief.' }
-  }
-
-  const hasExpired = data.expires_at ? new Date(data.expires_at) <= new Date() : false
-  const hasReachedUsageLimit =
-    data.max_uses != null && Number(data.used_count ?? 0) >= Number(data.max_uses)
 
   if (!data.is_active) {
-    console.warn('[AccessCode] is_active is false')
-    return { isValid: false, message: 'De code is ongeldig of niet meer actief.' }
+    return { isValid: false, message: 'Code niet actief' }
   }
 
-  if (hasExpired) {
-    console.warn('[AccessCode] expires_at is verlopen:', data.expires_at)
-    return { isValid: false, message: 'De code is ongeldig of niet meer actief.' }
-  }
-
-  if (hasReachedUsageLimit) {
-    console.warn('[AccessCode] max_uses bereikt', {
-      used_count: data.used_count,
-      max_uses: data.max_uses,
-    })
-    return { isValid: false, message: 'De code is ongeldig of niet meer actief.' }
+  const expired = data.expires_at && new Date(data.expires_at) < new Date()
+  if (expired) {
+    return { isValid: false, message: 'Code verlopen' }
   }
 
   const { error: updateError } = await supabase
     .from('access_codes')
-    .update({ used_count: Number(data.used_count ?? 0) + 1 })
+    .update({ used_count: (data.used_count ?? 0) + 1 })
     .eq('id', data.id)
 
   if (updateError) {
-    console.error('[AccessCode] Update error:', updateError)
-    return { isValid: false, message: 'De code is ongeldig of niet meer actief.' }
+    console.warn(updateError)
   }
 
-  return { isValid: true, message: '' }
+  return { isValid: true }
 }
+
+// async function validateAccessCode(inputCode) {
+//   const accessCode = inputCode.trim().toUpperCase()
+
+//   console.log('URL:', import.meta.env.VITE_SUPABASE_URL)
+//   console.log('[AccessCode] Samengestelde code:', accessCode)
+
+//   if (!accessCode) {
+//     console.warn('[AccessCode] Code is leeg na trim/toUpperCase')
+//     return { isValid: false, message: 'De code is ongeldig of niet meer actief.' }
+//   }
+
+//   const { data: allData } = await supabase
+//     .from('access_codes')
+//     .select('*')
+
+//   console.log('Alle codes in DB:', allData)
+
+//   const { data, error } = await supabase
+//     .from('access_codes')
+//     .select('*')
+//     .eq('code', accessCode)
+//     .maybeSingle()
+
+//   console.log('[AccessCode] data:', data)
+//   console.log('[AccessCode] error:', error)
+
+//   if (error) {
+//     console.error('[AccessCode] Supabase error:', error)
+//     return { isValid: false, message: 'De code is ongeldig of niet meer actief.' }
+//   }
+
+//   if (!data) {
+//     console.warn('[AccessCode] Geen data gevonden voor code:', accessCode)
+//     return { isValid: false, message: 'De code is ongeldig of niet meer actief.' }
+//   }
+
+//   const hasExpired = data.expires_at ? new Date(data.expires_at) <= new Date() : false
+//   const hasReachedUsageLimit =
+//     data.max_uses != null && Number(data.used_count ?? 0) >= Number(data.max_uses)
+
+//   if (!data.is_active) {
+//     console.warn('[AccessCode] is_active is false')
+//     return { isValid: false, message: 'De code is ongeldig of niet meer actief.' }
+//   }
+
+//   if (hasExpired) {
+//     console.warn('[AccessCode] expires_at is verlopen:', data.expires_at)
+//     return { isValid: false, message: 'De code is ongeldig of niet meer actief.' }
+//   }
+
+//   if (hasReachedUsageLimit) {
+//     console.warn('[AccessCode] max_uses bereikt', {
+//       used_count: data.used_count,
+//       max_uses: data.max_uses,
+//     })
+//     return { isValid: false, message: 'De code is ongeldig of niet meer actief.' }
+//   }
+
+//   const { error: updateError } = await supabase
+//     .from('access_codes')
+//     .update({ used_count: Number(data.used_count ?? 0) + 1 })
+//     .eq('id', data.id)
+
+//   if (updateError) {
+//     console.error('[AccessCode] Update error:', updateError)
+//     return { isValid: false, message: 'De code is ongeldig of niet meer actief.' }
+//   }
+
+//   return { isValid: true, message: '' }
+// }
 
 function focusCodeInput(index) {
   codeInputRefs.value[index]?.focus()
