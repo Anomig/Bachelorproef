@@ -18,4 +18,14 @@ if (!supabaseUrl || !supabaseAnonKey) {
   })
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+console.log('URL LENGTH', supabaseUrl.length)
+console.log('KEY LENGTH', supabaseAnonKey.length)
+
+console.log('URL CHARS', JSON.stringify(supabaseUrl))
+console.log('KEY START', supabaseAnonKey.slice(0, 20))
+console.log('KEY END', supabaseAnonKey.slice(-20))
+
+export const supabase = createClient(
+  supabaseUrl.trim(),
+  supabaseAnonKey.trim()
+)
