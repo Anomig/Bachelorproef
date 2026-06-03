@@ -1,4 +1,8 @@
+<script setup>
+import AppLoader from './components/layout/AppLoader.vue'
+</script>
+
 <template>
-  <!-- Root shell van de app: toont de actieve route-component via vue-router. -->
   <router-view />
+  <AppLoader />
 </template>

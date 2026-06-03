@@ -1,60 +1,153 @@
 <script setup>
-// Safe-exit scherm: geeft de gebruiker een pauze en laat toe om terug te keren of te stoppen.
-import { computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useSessionStore } from '../stores/sessionStore'
-import AppButton from '../components/AppButton.vue'
+import ScreenContainer from '../components/layout/ScreenContainer.vue'
+import BaseButton from '../components/base/BaseButton.vue'
+import PauseIcon from '../assets/icons/pause.svg'
 
-const router = useRouter()
 const route = useRoute()
-const store = useSessionStore()
+const router = useRouter()
 
 const returnTo = computed(() => {
-  const value = route.query.returnTo
-  return typeof value === 'string' && value ? value : '/overview'
+  const target = route.query.returnTo
+  return typeof target === 'string' && target.startsWith('/') ? target : null
 })
 
-onMounted(() => {
-  if (!store.joined) {
-    router.replace('/join')
+function goFurther() {
+  if (returnTo.value) {
+    router.replace(returnTo.value)
+    return
   }
-})
 
-function continueFlow() {
-  router.push(returnTo.value)
+  router.replace({ name: 'scenario-list' })
 }
 
-function stopSession() {
-  store.backToOverview()
-  router.push('/overview')
+function stopScenario() {
+  router.push({
+    name: 'stop-confirm',
+    query: {
+      returnTo: returnTo.value ?? '/scenario-lijst',
+    },
+  })
 }
 </script>
 
 <template>
-  <main class="page-shell page-shell--safe-exit">
-    <section class="safe-exit-screen">
-      <div class="safe-exit-icon" aria-hidden="true">
-        <img src="/images/fi-rr-pauze.png" alt="" class="safe-exit-icon__image">
+  <ScreenContainer size="medium">
+    <section class="safe-exit">
+      <div class="safe-exit__icon-wrap">
+        <img :src="PauseIcon" alt="" class="safe-exit__icon" aria-hidden="true" />
       </div>
 
-      <header class="safe-exit-header">
-        <h1 class="safe-exit-title">Even pauze?</h1>
-        <p class="safe-exit-body">
-          Je hoeft niet verder te gaan als het niet goed voelt. Neem een moment voor jezelf.
-          Je kan altijd later opnieuw starten.
-        </p>
-        <p class="safe-exit-note">Er wordt niets opgeslagen.</p>
-      </header>
+      <h1 class="safe-exit__title">
+        Even pauze?
+      </h1>
+
+      <p class="safe-exit__text">
+        Je hoeft niet verder te gaan als het niet goed voelt. Neem een moment voor
+        jezelf. Je kan altijd later opnieuw starten.
+      </p>
+
+      <p class="safe-exit__note">
+        Er wordt niets opgeslagen.
+      </p>
+
+      <div class="safe-exit__actions">
+        <BaseButton
+          fullWidth
+          size="lg"
+          @click="goFurther"
+        >
+          Ga verder
+        </BaseButton>
+
+        <BaseButton
+          fullWidth
+          size="lg"
+          variant="tertiary"
+          @click="stopScenario"
+        >
+          Stoppen?
+        </BaseButton>
+      </div>
     </section>
-
-    <div class="safe-exit-actions">
-      <AppButton variant="secondary" @click="continueFlow">
-        Ga verder
-      </AppButton>
-
-      <button class="safe-exit-stop" type="button" @click="stopSession">
-        Stoppen?
-      </button>
-    </div>
-  </main>
+  </ScreenContainer>
 </template>
+
+<style scoped>
+.safe-exit {
+  min-height: calc(100dvh - 64px);
+  display: flex;
+  flex-direction: column;
+  padding-top: 56px;
+  padding-bottom: 24px;
+}
+
+.safe-exit__icon-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.safe-exit__icon {
+  width: 92px;
+  height: 92px;
+}
+
+.safe-exit__title {
+  margin-top: 28px;
+  margin-bottom: 10px;
+  font-size: 2rem;
+  line-height: 1.1;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.safe-exit__text {
+  font-size: 1.125rem;
+  line-height: 1.25;
+  color: var(--color-text);
+}
+
+.safe-exit__note {
+  margin-top: 24px;
+  font-size: 0.875rem;
+  line-height: 1.3;
+  color: var(--color-text-muted);
+}
+
+.safe-exit__actions {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@media (min-width: 768px) {
+  .safe-exit {
+    max-width: 760px;
+    margin: 0 auto;
+    justify-content: center;
+    padding-top: 0;
+    padding-bottom: 0;
+    min-height: calc(100dvh - 32px);
+  }
+
+  .safe-exit__title {
+    font-size: clamp(2rem, 3vw, 2.5rem);
+  }
+
+  .safe-exit__text {
+    font-size: 1.05rem;
+    line-height: 1.35;
+  }
+
+  .safe-exit__note {
+    font-size: 0.95rem;
+  }
+
+  .safe-exit__icon {
+    width: 112px;
+    height: 112px;
+  }
+}
+</style>
