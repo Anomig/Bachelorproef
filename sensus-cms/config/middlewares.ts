@@ -5,7 +5,8 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Middlewar
   const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
-  'https://bachelorproef-admin.vercel.app'
+  'https://bachelorproef-admin.vercel.app',
+  'https://site.sensus-app.be'
 ].filter(
     (value): value is string => Boolean(value)
   );
