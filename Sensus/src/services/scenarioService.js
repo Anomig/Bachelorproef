@@ -76,12 +76,12 @@ export async function getScenarios() {
   })
 }
 
-export async function getScenarioBySlug(slug) {
+export async function getScenarioBySlug(id) {
   return withLoader(async () => {
     try {
-      if (!slug) return null
-      const encoded = encodeURIComponent(slug)
-      const url = buildStrapiUrl(`/api/scenarios?filters[slug][$eq]=${encoded}&populate=*`)
+      if (!id) return null
+      const encoded = encodeURIComponent(id)
+      const url = buildStrapiUrl(`/api/scenarios?filters[documentId][$eq]=${encoded}&populate=*`)
       const res = await fetch(url)
       if (!res.ok) {
         console.error('Failed to fetch scenario by slug from Strapi:', res.status, res.statusText)
