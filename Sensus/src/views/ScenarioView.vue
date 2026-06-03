@@ -70,20 +70,31 @@ const textAnswer = ref('')
  * Normalize Strapi engine_json (object -> array)
  */
 function normalizeScenario(engine) {
-  if (!engine?.steps) return null
+  if (!engine) return null
 
-  if (Array.isArray(engine.steps)) {
-    return engine
+  let stepsObject = engine.steps
+
+  // fallback als steps ontbreekt
+  if (!stepsObject) {
+    console.warn('No steps found in engine')
+    return null
   }
 
-  const stepsArray = Object.entries(engine.steps).map(([id, step]) => ({
+  // al array → maak map naar object
+  if (Array.isArray(stepsObject)) {
+    stepsObject = Object.fromEntries(
+      stepsObject.map(step => [step.id, step])
+    )
+  }
+
+  const stepsArray = Object.entries(stepsObject).map(([id, step]) => ({
     id,
-    ...step
+    ...step,
   }))
 
   return {
     ...engine,
-    steps: stepsArray
+    steps: stepsArray,
   }
 }
 
