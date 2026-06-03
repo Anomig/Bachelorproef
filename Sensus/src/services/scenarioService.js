@@ -66,11 +66,6 @@ export async function getScenarios() {
 
       const mapped = items.map(mapScenario)
 
-      // If is_active exists on items, filter to active only
-      if (mapped.some((m) => m.is_active !== null)) {
-        return mapped.filter((m) => m.is_active)
-      }
-
       return mapped
     } catch (err) {
       console.error('Error fetching scenarios from Strapi:', err)
