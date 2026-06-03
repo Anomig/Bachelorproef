@@ -28,12 +28,15 @@ const isCodeComplete = computed(() =>
 const isStartDisabled = computed(() => !isCodeComplete.value || isValidating.value)
 
 async function validateAccessCode(inputCode) {
+  console.log('VALIDATE START', inputCode)
   const accessCode = inputCode.trim().toUpperCase()
+  console.log('ACCESS CODE', accessCode)
 
   if (accessCode.length !== 5) {
     return { isValid: false, message: 'Ongeldige code' }
   }
 
+  console.log('QUERYING ACCESS_CODES...')
   const { data, error } = await supabase
     .from('access_codes')
     .select('id, code, is_active, expires_at, used_count, max_uses')
