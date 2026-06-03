@@ -145,6 +145,10 @@ function showScenarioError() {
 onMounted(async () => {
   try {
     const s = await getScenarioBySlug(documentId.value)
+    console.log('FULL SCENARIO RESPONSE:', s)
+console.log('ENGINE JSON TYPE:', typeof s?.engine_json)
+console.log('ENGINE JSON:', s?.engine_json)
+console.log('STEPS:', s?.engine_json?.steps)
     console.debug('getScenarioBySlug result:', s)
     console.debug('engine_json:', s?.engine_json)
     console.debug('engine_json.steps count:', s?.engine_json?.steps?.length)
