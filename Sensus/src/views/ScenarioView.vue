@@ -154,6 +154,10 @@ onMounted(async () => {
 
     const normalized = normalizeScenario(s?.engine_json)
 
+        console.log('START STEP:', normalized?.start)
+    console.log('AVAILABLE STEPS:', normalized?.steps?.map(s => s.id))
+    console.log('URL STEP:', route.query?.step)
+
     if (!normalized) throw new Error('Invalid scenario')
 
     scenario.value = normalized
