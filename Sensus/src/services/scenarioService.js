@@ -76,33 +76,42 @@ export async function getScenarios() {
   })
 }
 
-export async function getScenarioBySlug(id) {
+export async function getScenarioBySlug(documentId) {
   return withLoader(async () => {
     try {
-      if (!id) return null
-      const encoded = encodeURIComponent(id)
-      const url = buildStrapiUrl(`/api/scenarios?filters[documentId][$eq]=${encoded}&populate=*`)
+      if (!documentId) return null
+
+      const encoded = encodeURIComponent(documentId)
+
+      const url = buildStrapiUrl(
+        `/api/scenarios?filters[documentId][$eq]=${encoded}&populate=*`
+      )
+
       const res = await fetch(url)
+
       if (!res.ok) {
-        console.error('Failed to fetch scenario by slug from Strapi:', res.status, res.statusText)
-        // Try local fallback before returning
+        console.error('Failed to fetch scenario by documentId:', res.status, res.statusText)
+
         const local = loadLocalScenarios()
-        const foundLocal = local.find((l) => (l.slug === slug) || String(l.id) === String(slug))
+        const foundLocal = local.find((l) => l.documentId === documentId || String(l.id) === String(documentId))
+
         if (foundLocal) {
-          console.info('Using local scenario fallback for slug=', slug)
+          console.info('Using local scenario fallback for documentId=', documentId)
           return mapScenario(foundLocal)
         }
+
         return null
       }
 
       const json = await res.json()
       const item = json?.data?.[0]
+
       if (!item) {
-        // If Strapi returned no item, try local fallback
         const local = loadLocalScenarios()
-        const foundLocal = local.find((l) => (l.slug === slug) || String(l.id) === String(slug))
+        const foundLocal = local.find((l) => l.documentId === documentId || String(l.id) === String(documentId))
+
         if (foundLocal) {
-          console.info('Using local scenario fallback for slug (no item from Strapi)=', slug)
+          console.info('Using local scenario fallback (no Strapi result) for documentId=', documentId)
           return mapScenario(foundLocal)
         }
 
@@ -110,12 +119,15 @@ export async function getScenarioBySlug(id) {
       }
 
       return mapScenario(item)
+
     } catch (err) {
-      console.error('Error fetching scenario by slug from Strapi:', err)
+      console.error('Error fetching scenario by documentId:', err)
+
       const local = loadLocalScenarios()
-      const foundLocal = local.find((l) => (l.slug === slug) || String(l.id) === String(slug))
+      const foundLocal = local.find((l) => l.documentId === documentId || String(l.id) === String(documentId))
+
       if (foundLocal) {
-        console.info('Using local scenario fallback due to error for slug=', slug)
+        console.info('Using local scenario fallback due to error for documentId=', documentId)
         return mapScenario(foundLocal)
       }
 
