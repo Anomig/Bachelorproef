@@ -44,7 +44,12 @@ async function validateAccessCode(inputCode) {
     .limit(1)
     .single()
 
-  console.log({ data, error })
+  console.log('DATA', data)
+console.log('ERROR', error)
+console.log('ERROR MESSAGE', error?.message)
+console.log('ERROR DETAILS', error?.details)
+console.log('ERROR HINT', error?.hint)
+console.log('ERROR CODE', error?.code)
 
   if (error || !data) {
     return { isValid: false, message: 'De code is ongeldig of niet meer actief.' }
